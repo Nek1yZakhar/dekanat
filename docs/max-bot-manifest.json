@@ -1,0 +1,52 @@
+{
+  "$schema": "https://dev.max.ru/schemas/miniapp-manifest.json",
+  "app_id": "dekanat_igu_concept",
+  "name": "Цифровой деканат ИГУ (Концепт)",
+  "short_name": "Деканат",
+  "description": "Мобильный цифровой деканат: расписание, зачетка, онлайн-заказ справок и регламентный ИИ-помощник для студентов ИГУ.",
+  "version": "1.0.0",
+  "author": "Захар",
+  "category": "education",
+  "web_app": {
+    "url": "https://153.51.174.89.sslip.io?platform=max",
+    "theme_color": "#0f172a",
+    "background_color": "#020617",
+    "default_mode": "fullscreen",
+    "supported_platforms": ["ios", "android", "web"],
+    "safe_area_insets": true,
+    "header_style": {
+      "color": "dark",
+      "show_back_button": true,
+      "show_verified_badge": true
+    }
+  },
+  "bot_commands": [
+    {
+      "command": "/start",
+      "description": "Запустить Цифровой деканат"
+    },
+    {
+      "command": "/schedule",
+      "description": "Открыть расписание занятий"
+    },
+    {
+      "command": "/requests",
+      "description": "Заказать справку или подать заявление"
+    },
+    {
+      "command": "/ai",
+      "description": "Задать вопрос AI-ассистенту по регламентам"
+    }
+  ],
+  "deep_links": {
+    "default": "https://max.ru/dekanat_bot?startapp=default",
+    "student1": "https://max.ru/dekanat_bot?startapp=student1",
+    "student2": "https://max.ru/dekanat_bot?startapp=student2",
+    "requests": "https://max.ru/dekanat_bot?startapp=requests"
+  },
+  "compliance": {
+    "disclaimer": "Концепт для конкурса MGIMO × AI Challenge. Не является официальным сервисом ИГУ.",
+    "fictional_data": true,
+    "no_real_personal_data": true
+  }
+}

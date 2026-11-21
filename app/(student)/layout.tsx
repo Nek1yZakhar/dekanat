@@ -1,5 +1,6 @@
 import React from "react";
 import { MobileNav } from "@/components/mobile-nav";
+import { RealtimeListener } from "@/components/realtime-listener";
 import { requireUserSession } from "@/app/proxy";
 import { User, LogOut } from "lucide-react";
 import Link from "next/link";
@@ -13,6 +14,7 @@ export default async function StudentLayout({
 
   return (
     <div className="flex-1 flex flex-col min-h-screen pb-20">
+      <RealtimeListener userId={session.id} />
       {/* Student App Bar */}
       <header className="sticky top-6 z-30 w-full bg-background/90 backdrop-blur-md border-b border-border px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2.5 overflow-hidden">

@@ -11,12 +11,38 @@
 | **TICKET-01: Базовый каркас, схемы и проверка работоспособности** | 11.11.2026 | 🟢 Завершен | Стек Next.js 16 + React 19 + Tailwind v4 + shadcn/ui; реляционная DDL-схема Postgres 17 (10 таблиц, `pgvector`, RLS); сиды (3 пользователя, расписание, зачетка, 40 статей регламентов); академическая аналитика `lib/academic.ts` (6 тестов Vitest); 7 мобильных экранов; AI-роут с оффлайн-фоллбэком. | [TICKET-01](../specs/archive/TICKET-01-core-scaffolding.md) |
 | **TICKET-SPEC-SYSTEM: Внедрение системы спецификаций** | 11.11.2026 | 🟢 Завершен | Каталог `specs/` (8 полных спецификаций), реестр `README.md`, правила рабочего процесса `.agents/rules/specs.md`, синхронизация контекста, Five-File Invariant. | [specs/README.md](../specs/README.md) |
 | **TICKET-02: Облачная инфраструктура и деплой на Yandex Cloud** | 22.11.2026 | 🟢 Завершен | Развертывание в Yandex Cloud (Москва, `153.51.174.89`), Caddy auto-SSL (`153.51.174.89.sslip.io`), multi-stage Docker standalone, реактивация Supabase Cloud (`ACTIVE_HEALTHY`), Keep-Alive cron каждые 12 часов. | [TICKET-02](../specs/archive/TICKET-02-cloud-and-deployment.md) |
-| **TICKET-03: Realtime-уведомления и обновление очереди** | 22.11.2026 | 🟡 В работе | Включение публикаций `supabase_realtime`, клиентские подписки `postgres_changes` с RLS-авторизацией, живой таймлайн `/requests`, всплывающие toast-оповещения, автообновление `/staff`. | [TICKET-03](../specs/TICKET-03-realtime-notifications.md) |
-| **TICKET-04: Оболочка MAX Mini App (Госуслуги / MAX)** | — | ⚪ Пропущен | Снят со спринта (`SKIPPED`) для защиты дедлайна и перенаправления ресурсов на генератор PDF-справок и отчет процесса. | [TICKET-04](../specs/TICKET-04-max-mini-app.md) |
-| **TICKET-05: Оболочка Telegram Mini App [Опционально]** | 22.11.2026 | ⚪ Запланирован | Telegram WebApp SDK, криптографическая серверная валидация `initData` через HMAC-SHA256, маппинг в сессию Supabase. | [TICKET-05](../specs/TICKET-05-telegram-mini-app.md) |
-| **TICKET-06: Генератор PDF-справок и панель деканата** | 18.11.2026 | ⚪ Запланирован | Шаблонизатор на `@react-pdf/renderer` v4.x с кириллическим шрифтом Noto Sans, вымышленная печать концепта, Supabase Storage signed URLs, защита от IDOR, аудит-лог очереди деканата. | [TICKET-06](../specs/TICKET-06-certificates-and-staff-polish.md) |
+| **TICKET-03: Realtime-уведомления и обновление очереди** | 22.11.2026 | 🟢 Завершен | Включение публикаций `supabase_realtime`, клиентские подписки `postgres_changes` с RLS-авторизацией, живой таймлайн `/requests`, всплывающие toast-оповещения Sonner, мгновенное обновление очереди `/staff` с анимацией подсветки. | [TICKET-03](../specs/archive/TICKET-03-realtime-notifications.md) |
+| **TICKET-04: Оболочка MAX Mini App (Госуслуги / MAX) Dual-Mode** | 22.11.2026 | 🟢 Завершен | Архитектура Dual-Mode: нативный `lib/max-bridge.ts` (`ready`, `expand`, `onBackButtonPressed`), интерактивный веб-симулятор `/max-preview` для жюри конкурса, бейдж в шапке, манифест `docs/max-bot-manifest.json` для `dev.max.ru`. | [TICKET-04](../specs/archive/TICKET-04-max-mini-app.md) |
+| **TICKET-05: Оболочка Telegram Mini App [Опционально]** | — | ⚪ Пропущен | Снят в пользу национальной платформы MAX и веб-PWA. | [TICKET-05](../specs/TICKET-05-telegram-mini-app.md) |
+| **TICKET-06: Генератор PDF-справок и панель деканата** | 22.11.2026 | 🟡 В работе | Шаблонизатор на `@react-pdf/renderer` v4.x с кириллическим шрифтом Noto Sans, вымышленная печать концепта, Supabase Storage signed URLs, защита от IDOR, аудит-лог очереди деканата. | [TICKET-06](../specs/TICKET-06-certificates-and-staff-polish.md) |
 | **TICKET-07: Финальная полировка UX, доступность и PWA [Код-фриз]** | 19.11.2026 | ⚪ Запланирован | Аудит empty/loading/error состояний, PWA манифест и Service Worker, доступность WCAG AA, аудит Lighthouse Mobile $\ge 90$ на `/login` и `/dashboard`, заморозка кода. | [TICKET-07](../specs/TICKET-07-ux-pwa-final-polish.md) |
 | **TICKET-08: Сборка конкурсного пакета, отчет PROCESS.md и видео** | 21.11.2026 | ⚪ Запланирован | Генерация итогового представительского отчета `docs/PROCESS.pdf`, памятка «Для жюри» в `README.md`, сценарий 5-минутного видео, комплаенс-валидация, драфт заявки. | [TICKET-08](../specs/TICKET-08-submission-package.md) |
+
+---
+
+## 📅 [2026-11-22] — Релиз TICKET-03 и TICKET-04: Realtime-очередь модерации и MAX Mini App Dual-Mode
+
+### 🚀 TICKET-03 — Realtime Notifications & Queue Updates (Supabase Realtime, Sonner Toasts & Live Queue)
+- **Статус**: 🟢 COMPLETED & VERIFIED (22.11.2026)
+- **Исполнитель**: Захар (Solo-Maker & Architect)
+- **Ключевые результаты**:
+  1. *Postgres Publication & Replica Identity*: Таблицы `notifications`, `requests`, `request_events` добавлены в публикацию `supabase_realtime` через SQL; установлен режим `REPLICA IDENTITY FULL`.
+  2. *Библиотека тостов*: Интегрирована `sonner` v2.0.8, настроен `<Toaster richColors position="top-center" closeButton />`.
+  3. *Личный слушатель студента*: Создан компонент `components/realtime-listener.tsx` в студенческом лэйауте, автоматически перехватывающий персональные оповещения.
+  4. *Студенческий кабинет `/requests`*: Полный переход на реальные данные Supabase, живая подписка на смену статуса заявки сотрудником деканата со всплывающими тостами и обновлением таймлайна событий.
+  5. *Очередь деканата `/staff`*: Живая подписка на новые обращения студентов; новые заявки мгновенно появляются вверху списка с мягкой пульсирующей подсветкой (`ring-2 ring-primary bg-primary/5`); смена статуса в 1 клик с записью в историю.
+  6. *Спецификация*: Перенесена в [`specs/archive/TICKET-03-realtime-notifications.md`](../specs/archive/TICKET-03-realtime-notifications.md).
+
+### 🚀 TICKET-04 — MAX Mini App Wrapper (Dual-Mode: MAXBridge SDK & Web-Simulator /max-preview)
+- **Статус**: 🟢 COMPLETED & VERIFIED (22.11.2026)
+- **Исполнитель**: Захар (Solo-Maker & Architect)
+- **Ключевые результаты**:
+  1. *Клиентский SDK `lib/max-bridge.ts`*: Реализован типобезопасный мост MAXBridge (`ready()`, `expand()`, `close()`, `onBackButtonPressed()`, Safe Area Insets).
+  2. *Инициализатор `components/max-bridge-initializer.tsx`*: Автоматический запуск моста при `?platform=max` или наличии нативного `window.MAXBridge`.
+  3. *Интерактивный веб-симулятор `/max-preview`*: Аутентичный аппаратный 3D-фрейм смартфона (iPhone 16 / Android 360px), статус-бар, фирменная шапка MAX с верифицированным бейджем Госуслуг/ИГУ, перехват аппаратной кнопки «Назад», панель переключения экранов и копирование Deep-Link для жюри конкурса.
+  4. *Навигационный бейдж*: Кнопка быстрого доступа «Оболочка MAX» внедрена в `components/disclaimer-banner.tsx`.
+  5. *Манифест бота*: Сформирован `docs/max-bot-manifest.json` для регистрации чат-бота в консоли `dev.max.ru`.
+  6. *Спецификация*: Перенесена в [`specs/archive/TICKET-04-max-mini-app.md`](../specs/archive/TICKET-04-max-mini-app.md).
 
 ---
 

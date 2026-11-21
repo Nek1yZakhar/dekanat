@@ -52,21 +52,11 @@
 
 ---
 
-## References
-- Supabase Postgres Changes Guide: https://supabase.com/docs/guides/realtime/postgres-changes
-- Supabase Realtime Overview: https://supabase.com/docs/guides/realtime
-- Realtime Quotas & Limits: https://supabase.com/docs/guides/realtime/limits
-
----
-
-## Risks & Mitigations
-- **Риск**: Превышение лимита одновременных подключений (Concurrent Connections) на бесплатном тарифе Supabase (лимит: 200 коннектов).
-  *Митигация*: Создание единого мультиплексированного Realtime-канала на сессию вместо множества отдельных каналов на каждый компонент; обязательный cleanup при размонтировании.
-- **Риск**: Задержки доставки сокетов при нестабильной мобильной сети.
-  *Митигация*: Оптимистичное локальное обновление UI при действиях самого пользователя и fallback-поллинг при потере сокет-соединения.
-
----
-
-## Deferred ideas
-- Звуковые оповещения с возможностью отключения в настройках профиля.
-- Включение Web Notifications API для фоновых уведомлений при свернутой вкладке браузера.
+## Result (22.11.2026)
+- **Статус**: 🟢 **DONE** (100% требований спецификации реализовано).
+- **Публикация в Postgres**: таблицы `notifications`, `requests`, `request_events` добавлены в публикацию `supabase_realtime` через Supabase MCP SQL, активирован `REPLICA IDENTITY FULL`.
+- **Библиотека тостов**: установлен пакет `sonner` (`^2.0.8`), в `app/layout.tsx` смонтирован корневой провайдер `<Toaster richColors position="top-center" closeButton />`.
+- **Слушатель уведомлений**: реализован клиентский компонент `components/realtime-listener.tsx`, подключен в `app/(student)/layout.tsx` для автоматического всплывающего показа персональных пушей студента.
+- **Интерфейс студента (`/requests`)**: переведен с моковых данных на реальный Supabase CRUD, подключена подписка `postgres_changes` на обновление статусов заявок и таймлайна событий с тостами Sonner.
+- **Очередь модерации (`/staff`)**: переведена на живую подписку `requests`: новые обращения мгновенно появляются во главе списка с мягкой анимацией подсветки (`ring-2 ring-primary bg-primary/5`) и тостом Sonner; модератор может в 1 клик переводить заявку в «В работе», «Готово» или «Отклонить» с логированием в `request_events`.
+- **Quality Gates**: `pnpm typecheck` (PASSED), `pnpm lint` (PASSED), `pnpm test` (6/6 PASSED), `pnpm build` (PASSED).

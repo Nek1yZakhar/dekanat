@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { DisclaimerBanner } from "@/components/disclaimer-banner";
+import { MAXBridgeInitializer } from "@/components/max-bridge-initializer";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Цифровой деканат — концепт",
@@ -26,6 +28,8 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/20 flex flex-col">
+        <MAXBridgeInitializer />
+        <Toaster richColors position="top-center" closeButton />
         <DisclaimerBanner />
         <main className="flex-1 flex flex-col w-full max-w-md mx-auto">
           {children}

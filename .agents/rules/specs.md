@@ -19,20 +19,26 @@ When a ticket is completed:
 
 ## 4. Execution Sequence & Skip Rules
 - Ticket execution sequence is strictly fixed:
-  $$\text{TICKET-02} \longrightarrow \text{TICKET-03} \longrightarrow \text{TICKET-04} \longrightarrow \text{TICKET-05 (Optional)} \longrightarrow \text{TICKET-06} \longrightarrow \text{TICKET-07} \longrightarrow \text{TICKET-08}$$
-- **TICKET-05 (Telegram Mini App)** is optional: If time is constrained or platform approvals drag by 2026-11-17, close TICKET-05 as `SKIPPED` with a concise explanation in its `Result` section.
-- **TICKET-02 (Cloud & VPS Deployment)** and **TICKET-08 (Submission Package)** are mandatory and must **NEVER** be skipped under any circumstances.
+  $$\text{TICKET-01 [DONE]} \longrightarrow \text{TICKET-02 [DONE]} \longrightarrow \text{TICKET-03 [ACTIVE]} \longrightarrow \text{TICKET-04 [OPEN, MAX]} \longrightarrow \text{TICKET-06} \longrightarrow \text{TICKET-07} \longrightarrow \text{TICKET-08} \longrightarrow \text{TICKET-09 [29.11]}$$
+- **TICKET-04 (MAX Mini App)**: Active high-priority integration implementing the **Dual-Mode** strategy (native `MAX Bridge SDK` + browser simulator `/max-preview`).
+- **TICKET-05 (Telegram Mini App)**: Marked as `SKIPPED (Deferred)` — national super-app MAX and web PWA fully cover the mobile deanery experience.
+- **TICKET-06 (PDF Certificates & Staff Polish)**: High-priority document generator and staff workflow.
+- **TICKET-07 (UX & PWA Final Polish)**: Final accessibility, performance audit, and code freeze.
+- **TICKET-08 (Submission Package)**: Mandatory packaging of `PROCESS.md`, jury walkthrough, and video demonstration.
+- **TICKET-09 (Post-Contest Decommissioning)**: Scheduled infrastructure teardown on 29.11.2026 at 12:00 MSK to protect against cloud billing.
 - **Code Freeze**: No new functional features or core refactoring may be introduced after closing TICKET-07. TICKET-08 is dedicated entirely to process documentation, compliance audits, demo assets, and submission packaging.
 
 ## 5. Target Pacing & Timeline (Contest Window: Nov 11 – Nov 22, 2026)
-- **TICKET-02 (Cloud & Deployment)**: Target close by 2026-11-13.
-- **TICKET-03 (Realtime Notifications)**: Target close by 2026-11-14.
-- **TICKET-04 (MAX Mini App)**: Target close by 2026-11-16.
-- **TICKET-05 (Telegram Mini App)**: Target close by 2026-11-17 (or mark `SKIPPED`).
-- **TICKET-06 (Certificates & Staff Polish)**: Target close by 2026-11-18.
-- **TICKET-07 (UX & PWA Final Polish)**: Target close by 2026-11-19 (Code Freeze).
-- **TICKET-08 (Submission Package)**: Target close by 2026-11-20/21.
-- **Contest Deadline**: 2026-11-22 23:59 MSK (Prototype online window through 2026-11-28).
+- **TICKET-01 (Core Scaffolding)**: Closed 11.11.2026 (`specs/archive/TICKET-01-core-scaffolding.md`).
+- **TICKET-02 (Cloud & Yandex Deployment)**: Closed 22.11.2026 (`specs/archive/TICKET-02-cloud-and-deployment.md`).
+- **TICKET-03 (Realtime Notifications)**: Target close by 22.11.2026 (Active).
+- **TICKET-04 (MAX Mini App Dual-Mode)**: Target close by 22.11.2026.
+- **TICKET-05 (Telegram Mini App)**: `SKIPPED (Deferred)`.
+- **TICKET-06 (Certificates & Staff Polish)**: Target close by 22.11.2026.
+- **TICKET-07 (UX & PWA Final Polish)**: Target close by 22.11.2026 (Code Freeze).
+- **TICKET-08 (Submission Package)**: Target close by 22.11.2026 23:59 MSK.
+- **Contest Evaluation Window**: 23.11.2026 – 28.11.2026 (Prototype 100% online).
+- **TICKET-09 (Decommissioning)**: 29.11.2026 12:00 MSK.
 
 ## 6. Definition of Done Verifiability
 Every `Done-When` criterion must be deterministically verifiable by:

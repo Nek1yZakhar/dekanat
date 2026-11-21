@@ -10,10 +10,10 @@
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **TICKET-01** | Базовый каркас, схемы и проверка работоспособности | 🟢 **DONE** | 11.11.2026 | P0 (Критичный) | [TICKET-01](archive/TICKET-01-core-scaffolding.md) |
 | **TICKET-02** | Облачная инфраструктура и деплой на Yandex Cloud | 🟢 **DONE** | 22.11.2026 | P0 (Критичный) | [TICKET-02](archive/TICKET-02-cloud-and-deployment.md) |
-| **TICKET-03** | Realtime-уведомления и обновление очереди | 🟡 **ACTIVE** | 22.11.2026 | P1 (Высокий) | [TICKET-03](TICKET-03-realtime-notifications.md) |
-| **TICKET-04** | Оболочка MAX Mini App (Госуслуги / MAX) Dual-Mode | ⚪ **OPEN** | 22.11.2026 | P1 (Высокий) | [TICKET-04](TICKET-04-max-mini-app.md) |
+| **TICKET-03** | Realtime-уведомления и обновление очереди | 🟢 **DONE** | 22.11.2026 | P1 (Высокий) | [TICKET-03](archive/TICKET-03-realtime-notifications.md) |
+| **TICKET-04** | Оболочка MAX Mini App (Госуслуги / MAX) Dual-Mode | 🟢 **DONE** | 22.11.2026 | P1 (Высокий) | [TICKET-04](archive/TICKET-04-max-mini-app.md) |
 | **TICKET-05** | Оболочка Telegram Mini App | ⚪ **SKIPPED (Deferred)** | — | P2 (Отложен) | [TICKET-05](TICKET-05-telegram-mini-app.md) |
-| **TICKET-06** | Генератор PDF-справок и панель деканата | ⚪ **OPEN** | 22.11.2026 | P1 (Высокий) | [TICKET-06](TICKET-06-certificates-and-staff-polish.md) |
+| **TICKET-06** | Генератор PDF-справок и панель деканата | 🟡 **ACTIVE** | 22.11.2026 | P1 (Высокий) | [TICKET-06](TICKET-06-certificates-and-staff-polish.md) |
 | **TICKET-07** | Финальная полировка UX, доступность и PWA | ⚪ **OPEN** | 22.11.2026 | P1 (Высокий) | [TICKET-07](TICKET-07-ux-pwa-final-polish.md) |
 | **TICKET-08** | Конкурсный пакет, отчет PROCESS.md и видео | ⚪ **OPEN** | 22.11.2026 | P0 (Критичный) | [TICKET-08](TICKET-08-submission-package.md) |
 | **TICKET-09** | Вывод инфраструктуры из эксплуатации и защита от списаний | ⚪ **OPEN (Scheduled)** | 29.11.2026 | P1 (Безопасность) | [TICKET-09](TICKET-09-post-contest-decommissioning.md) |

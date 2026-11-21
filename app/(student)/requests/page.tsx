@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,14 @@ import {
   FileCheck,
   ChevronDown,
   ChevronUp,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 interface RequestEvent {
+  id?: string;
   status: string;
   actor: string;
   comment?: string;
@@ -34,73 +38,208 @@ interface RequestItem {
   events: RequestEvent[];
 }
 
-const INITIAL_REQUESTS: RequestItem[] = [
-  {
-    id: "req-1",
-    type: "certificate",
-    title: "Справка об обучении (с гербовой печатью)",
-    status: "ready",
-    created_at: "08 ноября 2026",
-    payload: { purpose: "Для оформления визы / по месту требования", copies: 2 },
-    events: [
-      { status: "submitted", actor: "Студент", comment: "Заявка сформирована онлайн", time: "08 ноя, 10:15" },
-      { status: "in_review", actor: "Сотрудник деканата", comment: "Принято в работу, проверка данных", time: "08 ноя, 14:30" },
-      { status: "ready", actor: "Сотрудник деканата", comment: "Справка подписана деканом. Ожидает в к. 201", time: "09 ноя, 11:00" },
-    ],
-  },
-  {
-    id: "req-2",
-    type: "application",
-    title: "Заявление на повторную аттестацию (пересдачу)",
-    status: "in_review",
-    created_at: "10 ноября 2026",
-    payload: { discipline: "Математический анализ", term: "Осенняя ликвидация задолженностей" },
-    events: [
-      { status: "submitted", actor: "Студент", comment: "Заявление отправлено на рассмотрение", time: "10 ноя, 09:40" },
-      { status: "in_review", actor: "Сотрудник деканата", comment: "Назначена дата комиссионной пересдачи: 24 ноября", time: "10 ноя, 12:10" },
-    ],
-  },
-];
+const TYPE_TITLES: Record<string, string> = {
+  certificate: "Справка об обучении (с гербовой печатью)",
+  reference: "Академическая справка с выпиской оценок",
+  application: "Заявление на повторную аттестацию (пересдачу)",
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  submitted: "Подано",
+  in_review: "В обработке",
+  ready: "Готово к выдаче",
+  rejected: "Отклонено",
+};
 
 export default function RequestsPage() {
-  const [requests, setRequests] = useState<RequestItem[]>(INITIAL_REQUESTS);
+  const [requests, setRequests] = useState<RequestItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [showNewForm, setShowNewForm] = useState(false);
-  const [expandedId, setExpandedId] = useState<string | null>("req-1");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   // Form State
   const [docType, setDocType] = useState<"certificate" | "reference" | "application">("certificate");
   const [purpose, setPurpose] = useState("");
   const [copies, setCopies] = useState("1");
 
-  const handleCreateRequest = (e: React.FormEvent) => {
-    e.preventDefault();
-    const typeTitles = {
-      certificate: "Справка об обучении",
-      reference: "Академическая справка с выпиской оценок",
-      application: "Заявление на пересдачу дисциплины",
-    };
+  const supabase = createClient();
 
-    const newReq: RequestItem = {
-      id: `req-${Date.now()}`,
-      type: docType,
-      title: typeTitles[docType],
-      status: "submitted",
-      created_at: "Только что",
-      payload: { purpose: purpose || "По месту требования", copies: parseInt(copies, 10) || 1 },
-      events: [
+  const formatDateTime = (isoString: string) => {
+    try {
+      const d = new Date(isoString);
+      return d.toLocaleDateString("ru-RU", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return isoString;
+    }
+  };
+
+  const loadRequests = useCallback(async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const { data, error } = await supabase
+        .from("requests")
+        .select(`
+          id,
+          type,
+          payload,
+          status,
+          created_at,
+          request_events (
+            id,
+            status,
+            actor,
+            comment,
+            created_at
+          )
+        `)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.warn("Requests load error:", error.message);
+        return;
+      }
+
+      if (data) {
+        const formatted: RequestItem[] = data.map((item: any) => ({
+          id: item.id,
+          type: item.type,
+          title: item.payload?.title || TYPE_TITLES[item.type] || "Электронное обращение",
+          status: item.status,
+          created_at: formatDateTime(item.created_at),
+          payload: item.payload || {},
+          events: (item.request_events || [])
+            .sort(
+              (a: any, b: any) =>
+                new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+            )
+            .map((evt: any) => ({
+              id: evt.id,
+              status: evt.status,
+              actor: evt.actor,
+              comment: evt.comment,
+              time: formatDateTime(evt.created_at),
+            })),
+        }));
+
+        setRequests(formatted);
+        if (formatted.length > 0 && !expandedId) {
+          setExpandedId(formatted[0].id);
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to load requests:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [supabase, expandedId]);
+
+  useEffect(() => {
+    loadRequests();
+
+    // Setup Supabase Realtime channel for live updates
+    const channel = supabase
+      .channel("student-requests-live")
+      .on(
+        "postgres_changes",
         {
+          event: "*",
+          schema: "public",
+          table: "requests",
+        },
+        (payload) => {
+          if (payload.eventType === "UPDATE") {
+            const updated = payload.new as any;
+            const newStatusLabel = STATUS_LABELS[updated.status] || updated.status;
+            toast.success(`Статус заявки обновлен: ${newStatusLabel}`, {
+              duration: 4000,
+            });
+            loadRequests();
+          } else if (payload.eventType === "INSERT") {
+            loadRequests();
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "request_events",
+        },
+        () => {
+          loadRequests();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, loadRequests]);
+
+  const handleCreateRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const studentId = user?.id || "00000000-0000-0000-0000-000000000001";
+      const title = TYPE_TITLES[docType];
+      const payloadData = {
+        title,
+        purpose: purpose || "По месту требования",
+        copies: parseInt(copies, 10) || 1,
+      };
+
+      const { data: newRow, error } = await supabase
+        .from("requests")
+        .insert({
+          student_id: studentId,
+          type: docType,
+          payload: payloadData,
+          status: "submitted",
+        })
+        .select()
+        .single();
+
+      if (error) {
+        toast.error("Ошибка при создании заявки: " + error.message);
+        return;
+      }
+
+      if (newRow) {
+        // Insert initial history event
+        await supabase.from("request_events").insert({
+          request_id: newRow.id,
           status: "submitted",
           actor: "Студент",
-          comment: "Заявка зарегистрирована в системе",
-          time: "Только что",
-        },
-      ],
-    };
+          comment: "Заявка зарегистрирована в системе онлайн",
+        });
 
-    setRequests([newReq, ...requests]);
-    setShowNewForm(false);
-    setPurpose("");
-    setExpandedId(newReq.id);
+        toast.success("Заявка успешно отправлена в деканат");
+        setShowNewForm(false);
+        setPurpose("");
+        setCopies("1");
+        await loadRequests();
+        setExpandedId(newRow.id);
+      }
+    } catch (err: any) {
+      toast.error("Не удалось отправить заявку: " + (err?.message || "Неизвестная ошибка"));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const getStatusBadge = (status: RequestItem["status"]) => {
@@ -113,6 +252,8 @@ export default function RequestsPage() {
         return <Badge variant="success">Готово к выдаче</Badge>;
       case "rejected":
         return <Badge variant="destructive">Отклонено</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
@@ -122,7 +263,7 @@ export default function RequestsPage() {
         <div>
           <h1 className="text-xl font-bold tracking-tight">Заявки и справки</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Заказ документов и трекинг статуса онлайн
+            Заказ документов и трекинг статуса в реальном времени
           </p>
         </div>
         <Button
@@ -135,7 +276,7 @@ export default function RequestsPage() {
         </Button>
       </div>
 
-      {/* New Request Modal/Inline Form */}
+      {/* New Request Inline Form */}
       {showNewForm && (
         <Card className="border-primary/30 bg-primary/5">
           <CardHeader className="pb-2">
@@ -153,37 +294,52 @@ export default function RequestsPage() {
                   onChange={(e) => setDocType(e.target.value as any)}
                   className="w-full h-10 px-3 rounded-xl border border-input bg-background text-xs focus:outline-none focus:ring-2 focus:ring-ring"
                 >
-                  <option value="certificate">Справка об обучении (гербовая)</option>
+                  <option value="certificate">Справка об обучении (гербовая печать)</option>
                   <option value="reference">Академическая справка (с оценками)</option>
                   <option value="application">Заявление на пересдачу дисциплины</option>
                 </select>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Цель / Место требования</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  {docType === "application" ? "Дисциплина" : "Цель / Место требования"}
+                </label>
                 <Input
-                  placeholder="Например: Для оформления визы, Соцзащита, Работа"
+                  placeholder={
+                    docType === "application"
+                      ? "Например: Математический анализ"
+                      : "Например: Для оформления визы, Соцзащита, Работа"
+                  }
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
                   required
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Количество экземпляров</label>
-                <Input
-                  type="number"
-                  min="1"
-                  max="5"
-                  value={copies}
-                  onChange={(e) => setCopies(e.target.value)}
-                  required
-                />
-              </div>
+              {docType !== "application" && (
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-muted-foreground">Количество экземпляров</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={copies}
+                    onChange={(e) => setCopies(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
 
               <div className="flex gap-2 pt-1">
-                <Button type="submit" size="sm" className="flex-1 text-xs">
-                  Отправить заявку
+                <Button type="submit" size="sm" disabled={submitting} className="flex-1 text-xs">
+                  {submitting ? (
+                    <span className="flex items-center gap-1.5">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Отправка...
+                    </span>
+                  ) : (
+                    "Отправить заявку"
+                  )}
                 </Button>
                 <Button
                   type="button"
@@ -200,12 +356,31 @@ export default function RequestsPage() {
         </Card>
       )}
 
+      {/* Loading State */}
+      {loading && requests.length === 0 && (
+        <div className="py-8 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+          <Loader2 className="w-5 h-5 animate-spin text-primary" />
+          <span className="text-xs">Загрузка истории заявок...</span>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && requests.length === 0 && (
+        <Card className="border-dashed p-6 text-center">
+          <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-50" />
+          <h3 className="text-sm font-semibold">Заявок пока нет</h3>
+          <p className="text-xs text-muted-foreground mt-1">
+            Нажмите «Новая заявка», чтобы заказать справку об обучении или подать заявление онлайн.
+          </p>
+        </Card>
+      )}
+
       {/* Requests List */}
       <div className="space-y-3">
         {requests.map((item) => {
           const isExpanded = expandedId === item.id;
           return (
-            <Card key={item.id} className="border-border">
+            <Card key={item.id} className="border-border transition-all">
               <CardHeader
                 className="cursor-pointer pb-2"
                 onClick={() => setExpandedId(isExpanded ? null : item.id)}
@@ -232,7 +407,7 @@ export default function RequestsPage() {
                 <CardContent className="space-y-3 pt-0 border-t border-border/50 mt-2 text-xs">
                   <div className="text-muted-foreground pt-2">
                     <div>
-                      <strong>Назначение:</strong> {item.payload.purpose || item.payload.discipline}
+                      <strong>Назначение:</strong> {item.payload.purpose || item.payload.discipline || "По месту требования"}
                     </div>
                     {item.payload.copies && (
                       <div>

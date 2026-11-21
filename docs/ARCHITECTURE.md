@@ -7,6 +7,7 @@ graph TD
   subgraph Clients["Клиентский слой (Mobile-First >= 360px)"]
     W["Мобильный браузер (Web PWA)"]
     MAX["MAX Mini App (Национальный супер-апп / /max-preview)"]
+    SONNER["Всплывающие уведомления Sonner Toasts"]
   end
 
   subgraph Ingress["Сетевой периметр (Yandex Cloud Compute VM 153.51.174.89)"]
@@ -15,7 +16,7 @@ graph TD
   end
 
   subgraph NextApp["Next.js 16 Standalone Container (Порт 3000)"]
-    DISC["Сквозной баннер-дисклеймер конкурса"]
+    DISC["Сквозной баннер-дисклеймер + Кнопка «Оболочка MAX»"]
     AUTH["Авторизация: /login (3 тестовых роли)"]
     STUDENT["Кабинет студента: /dashboard, /schedule, /grades, /requests, /ai"]
     STAFF["Кабинет деканата: /staff (Очередь и модерация заявок)"]
@@ -23,6 +24,7 @@ graph TD
     API_AI["/api/ai/chat (Гибридный RAG + SOCKS5 Egress)"]
     API_HEALTH["/api/health (Мониторинг жизнеспособности)"]
     PROXY["app/proxy.ts (Серверная проверка сессий Supabase SSR)"]
+    RT_LISTENER["components/realtime-listener.tsx"]
   end
 
   subgraph SupabaseCloud["Облачный кластер Supabase (eu-central-1, Postgres 17)"]
@@ -30,6 +32,7 @@ graph TD
     RLS["Row Level Security (Изоляция студентов по auth.uid())"]
     TABLES[("Таблицы: profiles, groups, lessons, lesson_changes,<br/>grade_records, requests, request_events,<br/>notifications, regulation_chunks, ai_messages")]
     PGV["pgvector (косинусное сходство match_regulation_chunks)"]
+    PUB["Публикация supabase_realtime<br/>(requests, request_events, notifications)"]
   end
 
   subgraph ExternalAI["Внешний AI-контур"]
@@ -57,11 +60,17 @@ graph TD
   STAFF --> PROXY --> RLS
   AUTH --> AUTHN
 
+  STUDENT --> RT_LISTENER
+  RT_LISTENER -.->|"WebSocket postgres_changes"| PUB
+  STAFF -.->|"WebSocket postgres_changes"| PUB
+  PUB -.->|"Push-события & тосты"| SONNER
+
   API_AI --> PGV
   API_AI --> PROXY_SOCKS --> OPENROUTER
   API_AI -.->|"Fallback при 429/офлайн"| OFFLINE_FALLBACK
 
   RLS --> TABLES
+  TABLES --> PUB
   CRON -->|"Keep-Alive опрос"| API_HEALTH
 ```
 
@@ -110,3 +119,9 @@ graph TD
 - **Дата**: 22 ноября 2026
 - **Контекст**: В рамках регламента конкурса МГИМО концепция «Цифрового деканата» оценивается по смелости идеи и глубине интеграции в государственные и образовательные экосистемы.
 - **Решение**: Реализовать поддержку национальной платформы **MAX (Госуслуги / MAX)** по схеме Dual-Mode (нативный `MAX Bridge SDK` + веб-симулятор `/max-preview`). Тикет Telegram Mini App переведен в статус `SKIPPED`, так как он является вторичным и менее релевантным академическому контексту РФ, чем национальный супер-апп.
+
+### ADR-006: Интеграция Supabase Realtime (postgres_changes) и тостов Sonner для очередей самообслуживания
+- **Дата**: 22 ноября 2026
+- **Контекст**: В архаичных студенческих системах статус заявки требует регулярной ручной перезагрузки страниц (F5). Для конкурсного прототипа требуется моментальный отклик интерфейса как у студента, так и у сотрудника деканата.
+- **Решение**: Включить публикацию `supabase_realtime` для таблиц `requests`, `request_events`, `notifications` в связке со строгим RLS и `REPLICA IDENTITY FULL`. Использовать библиотеку `sonner` для ненавязчивых всплывающих уведомлений, а в очереди модерации (`/staff`) при поступлении новых заявок применять кратковременную пульсирующую подсветку (`ring-2 ring-primary bg-primary/5`).
+- **Последствия**: Задержка обновления статусов между параллельными сессиями составляет менее 1.5 секунд; соблюдается строгая безопасность и нулевая утечка чужих данных через сокеты.
