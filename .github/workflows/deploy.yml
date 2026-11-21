@@ -1,0 +1,77 @@
+name: Production CI/CD Pipeline (Dekanat)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: "🧪 Quality Gates (Typecheck & Vitest)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run TypeScript typecheck
+        run: pnpm typecheck
+
+      - name: Run unit test suite
+        run: pnpm test
+
+  deploy:
+    name: "🚀 Deploy to Yandex Cloud (153.51.174.89)"
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Execute remote deployment over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST || '153.51.174.89' }}
+          username: ${{ secrets.VPS_USER || 'ubuntu' }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            echo "=== 1. Updating codebase on server ==="
+            cd /home/ubuntu/dekanat
+            git pull origin main || true
+
+            echo "=== 2. Rebuilding and restarting containers ==="
+            docker compose up -d --build
+
+            echo "=== 3. Waiting for healthcheck ==="
+            sleep 5
+            docker compose ps
+
+            echo "=== 4. Smoke check ==="
+            curl -f -s http://127.0.0.1:3000/api/health || curl -f -s https://153.51.174.89.sslip.io/api/health
+            echo "Deployment completed successfully!"

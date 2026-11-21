@@ -16,6 +16,7 @@
 | **TICKET-06** | Генератор PDF-справок и панель деканата | ⚪ **OPEN** | 22.11.2026 | P1 (Высокий) | [TICKET-06](TICKET-06-certificates-and-staff-polish.md) |
 | **TICKET-07** | Финальная полировка UX, доступность и PWA | ⚪ **OPEN** | 22.11.2026 | P1 (Высокий) | [TICKET-07](TICKET-07-ux-pwa-final-polish.md) |
 | **TICKET-08** | Конкурсный пакет, отчет PROCESS.md и видео | ⚪ **OPEN** | 22.11.2026 | P0 (Критичный) | [TICKET-08](TICKET-08-submission-package.md) |
+| **TICKET-09** | Вывод инфраструктуры из эксплуатации и защита от списаний | ⚪ **OPEN (Scheduled)** | 29.11.2026 | P1 (Безопасность) | [TICKET-09](TICKET-09-post-contest-decommissioning.md) |
 
 > **Архитектурное решение по мобильным интеграциям (22.11.2026)**:
 > - **TICKET-04 (MAX Mini App)**: реализуется по схеме **Dual-Mode** (нативный `MAX Bridge SDK` для запуска в реальном приложении MAX + встроенный веб-симулятор `/max-preview` для гарантированной проверки жюри прямо из браузера).

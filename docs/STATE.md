@@ -68,6 +68,7 @@ graph TD
     T04 --> T06["TICKET-06: PDF Certificates & Staff Panel Polish"]
     T06 --> T07["TICKET-07: UX, Accessibility & PWA Polish [Code Freeze]"]
     T07 --> T08["TICKET-08: Submission Package, PROCESS.md & Video Demo"]
+    T08 --> T09["TICKET-09: Post-Contest Decommissioning (29.11.2026)"]
 
     style T01 fill:#22c55e,stroke:#16a34a,color:#fff
     style T02 fill:#22c55e,stroke:#16a34a,color:#fff
@@ -76,6 +77,7 @@ graph TD
     style T06 fill:#a855f7,stroke:#9333ea,color:#fff
     style T07 fill:#64748b,stroke:#475569,color:#fff
     style T08 fill:#ef4444,stroke:#dc2626,color:#fff
+    style T09 fill:#94a3b8,stroke:#64748b,color:#000
 ```
 
 ### 📋 Реестр спецификаций платформы
@@ -90,3 +92,4 @@ graph TD
 | **TICKET-06** | Генератор PDF-справок и панель деканата | ⚪ **OPEN** | P1 (Высокий) | [TICKET-06](TICKET-06-certificates-and-staff-polish.md) |
 | **TICKET-07** | Финальная полировка UX, доступность и PWA | ⚪ **OPEN** | P1 (Высокий) | [TICKET-07](TICKET-07-ux-pwa-final-polish.md) |
 | **TICKET-08** | Конкурсный пакет, отчет PROCESS.md и видео | ⚪ **OPEN** | P0 (Критичный) | [TICKET-08](TICKET-08-submission-package.md) |
+| **TICKET-09** | Вывод инфраструктуры из эксплуатации и защита от списаний | ⚪ **OPEN (Scheduled: 29.11.2026)** | P1 (Безопасность) | [TICKET-09](../specs/TICKET-09-post-contest-decommissioning.md) |

@@ -25,3 +25,7 @@
 2. **Zero Real Personal Data**: 100% fictional records, names, grades, and faculty identities.
 3. **Strict RLS**: Direct database operations must never bypass Row-Level Security for student contexts.
 4. **Server-Only AI Keys**: AI provider keys and service role keys must never reach client bundles.
+
+## MCP Server Routing & Whitelist
+- **Whitelisted MCP Servers**: `vps-ssh-dekanat` (host: `153.51.174.89`), `supabase-mcp-server`, `github-server-nek1y`
+- **Blacklisted MCP Servers**: `vps-ssh-autoparts`, `vps-ssh-mib-osint`, `vps-ssh-via-tourism-2`, `github-server-via-tourism`
