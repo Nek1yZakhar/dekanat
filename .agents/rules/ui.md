@@ -42,3 +42,8 @@
 - The contest disclaimer (*«Концепт для конкурса. Не является официальным сервисом ИГУ»*) must feature high-contrast, easily readable styling.
 - Provide a dismiss/collapse button (SVG `X`) allowing evaluators to temporarily hide the banner and inspect the clean viewport.
 - The «Оболочка MAX» trigger must feature a prominent, contrasting accent color (blue/indigo), never pale orange on yellow.
+
+## 8. Modal Dialogs, Document Cards & High-Contrast Footers
+- **Modal Dialog Footers**: Modal dialogs displaying documents or external embeds (e.g., `CertificateModal`) MUST feature a solid, high-contrast footer background (`bg-card border-t border-border`), completely preventing transparency or dark overlay bleed-through from the backdrop. Action buttons inside modal footers must have distinct visual hierarchies: primary action (e.g., «Скачать PDF») MUST have a vibrant solid fill with high-contrast text (`bg-emerald-600 text-white font-semibold`), while secondary actions («В новой вкладке», «Печать») must use distinct contrasting borders and readable foreground text (`text-foreground`).
+- **Document & Status Cards**: Notification cards (e.g., ready certificates on `/requests`) must use clean semi-transparent cards (`bg-card/75 backdrop-blur-xs border border-emerald-500/30`) with high-contrast primary text (`text-foreground`). Murky, low-contrast solid blocks (e.g., dense grey-green backgrounds with washed-out text) are strictly prohibited.
+- **Natural Administrative Copy**: UI copy must avoid archaic or overly bureaucratic jargon. Use «забрать оригинал с печатью в кабинете 201» instead of «с мокрой печатью».

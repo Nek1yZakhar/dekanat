@@ -13,6 +13,7 @@
 - **Database & Auth**: Supabase Postgres 17 (RLS on all tables), Supabase Auth, pgvector extension
 - **Client/Server SDK**: `@supabase/ssr`, `@supabase/supabase-js`, Zod
 - **AI Integration**: OpenAI-compatible chat API with pgvector RAG; deterministic heuristic fallback
+- **PDF Engine & Fonts**: `@react-pdf/renderer` v4.x with local TrueType Noto Sans font stack (`public/fonts/NotoSans-*.ttf`) ensuring Zero-Mojibake Cyrillic rendering across all environments
 
 ## Production Infrastructure & Runtime Conventions
 - **Production URL**: `https://153.51.174.89.sslip.io` (accessible in Russia without VPN)
@@ -45,6 +46,7 @@
 9. **Zero Internal Jargon in UI (Sasha Standard)**: Technical terms (`TICKET-04`, `Dual-Mode`, `SSoT`, `RAG`, `Dashboard`) must never appear in user-facing UI. Pure Russian interface copy.
 10. **Academic AI Guardrails & Offtopic Refusal**: AI assistant strictly answers university regulatory queries. Offtopic questions (recipes, chat, weather) are politely refused. Markdown is rendered cleanly with zero raw asterisks (`**`).
 11. **Post-Contest Decommissioning (TICKET-09)**: All cloud resources (VM, unattached 10 GB disk, public IP) must be terminated on 29.11.2026 at 12:00 MSK per `specs/TICKET-09-post-contest-decommissioning.md` to prevent card charges.
+12. **Certificate Generation, IDOR Security & Modal Contrast**: Generated student certificates must include authentic blue seal, qualified electronic digital signature (ЭЦП) stamp, and contest disclaimer. The API endpoint (`/api/requests/[id]/certificate`) enforces strict IDOR protection (`role === 'staff'` or `student_id === auth.uid()`). Certificate preview modals must feature solid, high-contrast footers (`bg-card`) with accessible, high-contrast action buttons. Status cards on `/requests` must use semi-transparent glassmorphism with high-contrast text and zero archaic jargon (no «мокрая печать»).
 
 ## MCP Server Routing & Whitelist
 - **Whitelisted MCP Servers**: `vps-ssh-dekanat` (host: `153.51.174.89`), `supabase-mcp-server`, `github-server-nek1y`

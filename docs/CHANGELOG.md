@@ -48,7 +48,11 @@
   6. *Quality Gates & Tests*:
      - Написан всесторонний набор тестов `tests/certificate.test.ts` (16 проверок матрицы IDOR и рендеринга PDF). Суммарно в проекте: 22/22 тестов Vitest успешно пройдены.
      - `pnpm typecheck` (0 ошибок), `pnpm lint` (0 предупреждений), `pnpm build` (чистая сборка standalone).
-  7. *Спецификация*: [`specs/TICKET-06-certificates-and-staff-polish.md`](../specs/TICKET-06-certificates-and-staff-polish.md).
+  7. *Визуальная полировка карточки справки и контрастного футера (Hotfix)*:
+     - На `/requests` плотная серо-зеленая плашка заменена на аккуратную полупрозрачную карточку в стиле Glassmorphism (`bg-card/75 backdrop-blur-xs border border-emerald-500/30`) с высокой контрастностью текста `text-foreground`.
+     - Исключено устаревшее бюрократическое слово «мокрая» печать: формулировка скорректирована на *«...забрать оригинал с печатью в кабинете 201»*.
+     - В модальном окне `CertificateModal` футер оформлен сплошной контрастной подложкой `bg-card border-t border-border`, кнопка «Скачать PDF» получила сочный изумрудный акцент с белым шрифтом (`bg-emerald-600 text-white font-semibold`), а кнопки «В новой вкладке», «Печать» и «Закрыть» — четкие контрастные контуры и читаемый текст.
+  8. *Спецификация*: [`specs/TICKET-06-certificates-and-staff-polish.md`](../specs/TICKET-06-certificates-and-staff-polish.md).
 
 ---
 
