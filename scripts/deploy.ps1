@@ -31,21 +31,9 @@ scp -i $SSH_KEY $ARCHIVE "${VPS_USER}@${VPS_HOST}:/home/ubuntu/${ARCHIVE}"
 Remove-Item $ARCHIVE -Force
 
 Write-Host "=== 4. Unpacking and Rebuilding Containers on Server ===" -ForegroundColor Cyan
-$remoteScript = @"
-set -e
-mkdir -p $DEST_DIR
-tar -xzf /home/ubuntu/$ARCHIVE -C $DEST_DIR
-rm -f /home/ubuntu/$ARCHIVE
-cd $DEST_DIR
-docker compose up -d --build
-sleep 4
-docker compose ps
-curl -s http://127.0.0.1:3000/api/health || curl -s https://153.51.174.89.sslip.io/api/health
-echo ''
-echo '=== REMOTE DEPLOY SUCCESSFUL ==='
-"@
+$remoteCmd = "set -e && mkdir -p $DEST_DIR && tar -xzf /home/ubuntu/$ARCHIVE -C $DEST_DIR && rm -f /home/ubuntu/$ARCHIVE && cd $DEST_DIR && docker compose up -d --build && sleep 4 && docker compose ps && (curl -s http://127.0.0.1:3000/api/health || curl -s https://153.51.174.89.sslip.io/api/health) && echo '' && echo '=== REMOTE DEPLOY SUCCESSFUL ==='"
 
-ssh -i $SSH_KEY "${VPS_USER}@${VPS_HOST}" $remoteScript
+ssh -o StrictHostKeyChecking=no -i $SSH_KEY "${VPS_USER}@${VPS_HOST}" "$remoteCmd"
 
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Green
