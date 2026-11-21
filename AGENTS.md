@@ -4,6 +4,7 @@
 - **Project**: Dekanat (Digital Deanery Concept for MGIMO × AI Challenge, Vibe-Coding track)
 - **Author**: Zakhar (Solo Maker)
 - **Goal**: Mobile-first digital deanery portal unifying schedule, academic progress, online requests, notifications, and an AI regulatory assistant.
+- **Specifications & Workflow**: Master roadmap and tickets in [specs/](specs/README.md), workflow rules in [.agents/rules/specs.md](.agents/rules/specs.md).
 - **Deadline**: 2026-11-22 23:59 MSK (active evaluation window through 2026-11-28).
 
 ## Technology Stack

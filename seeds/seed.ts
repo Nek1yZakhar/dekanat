@@ -1,4 +1,6 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
+dotenv.config();
 import { createClient } from '@supabase/supabase-js';
 
 // Load Supabase credentials
@@ -43,6 +45,7 @@ async function runSeed() {
   await supabase.from('lesson_changes').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('lessons').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('notifications').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  await supabase.from('profiles').delete().neq('id', '00000000-0000-0000-0000-000000000000');
   await supabase.from('regulation_chunks').delete().neq('id', '00000000-0000-0000-0000-000000000000');
 
   // 2. Insert Groups

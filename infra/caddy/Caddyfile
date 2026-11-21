@@ -1,0 +1,24 @@
+# ==============================================================================
+# Caddyfile: Production Reverse-Proxy & Automatic SSL for Dekanat
+# ==============================================================================
+
+{$DOMAIN_NAME:localhost} {
+    encode gzip zstd
+
+    # Security Headers Invariant
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+        -Server
+    }
+
+    # Proxy to Next.js Standalone container
+    reverse_proxy dekanat:3000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}

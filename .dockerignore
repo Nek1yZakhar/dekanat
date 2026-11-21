@@ -1,0 +1,28 @@
+# Git and dependencies
+.git
+.github
+node_modules
+.pnpm-store
+
+# Next.js build output
+.next
+out
+build
+
+# Local environment files (NEVER leak into image build context)
+.env
+.env*.local
+
+# Tests and documentation
+tests
+specs
+docs
+prompts
+
+# Misc
+*.pem
+.DS_Store
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*

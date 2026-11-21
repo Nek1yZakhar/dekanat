@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { SocksProxyAgent } from "socks-proxy-agent";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+export interface RegulationItem {
+  article: string;
+  content: string;
+  keywords?: string[];
+}
 
 // Fallback fictional regulation knowledge base for deterministic offline search
-const REGULATION_KNOWLEDGE_BASE = [
+const REGULATION_KNOWLEDGE_BASE: RegulationItem[] = [
   {
     article: "Регламент ликвидации академических задолженностей, п. 1.1",
     keywords: ["пересдач", "пересдать", "задолженност", "долг", "хвост", "повторн"],
@@ -39,6 +47,95 @@ const REGULATION_KNOWLEDGE_BASE = [
   },
 ];
 
+async function fetchRelevantRegulations(message: string): Promise<RegulationItem[]> {
+  try {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const supabase = createAdminClient();
+      const lower = message.toLowerCase();
+      const tokens = lower
+        .replace(/[.,?!;:()]/g, " ")
+        .split(/\s+/)
+        .filter((t) => t.length >= 3);
+
+      if (tokens.length > 0) {
+        const orFilter = tokens.slice(0, 5).map((t) => `content.ilike.%${t}%`).join(",");
+        const { data, error } = await supabase
+          .from("regulation_chunks")
+          .select("content, metadata")
+          .or(orFilter)
+          .limit(4);
+
+        if (!error && data && data.length > 0) {
+          return data.map((d) => ({
+            article: (d.metadata as { article?: string })?.article || "Регламент университета",
+            content: d.content,
+          }));
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase regulation search failed, using local fallback base", err);
+  }
+
+  // Fallback to local memory base
+  const lower = message.toLowerCase();
+  const matched = REGULATION_KNOWLEDGE_BASE.filter((item) =>
+    item.keywords?.some((kw) => lower.includes(kw))
+  );
+  return matched.length > 0 ? matched : [REGULATION_KNOWLEDGE_BASE[0]];
+}
+
+async function queryLLM(
+  systemPrompt: string,
+  userMessage: string,
+  model: string,
+  apiKey: string,
+  baseUrl: string,
+  proxyUrl?: string
+): Promise<string | null> {
+  const agent = proxyUrl ? new SocksProxyAgent(proxyUrl) : undefined;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+  try {
+    const fetchOptions: RequestInit & { agent?: SocksProxyAgent } = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userMessage },
+        ],
+        temperature: 0.2,
+      }),
+      signal: controller.signal,
+    };
+
+    if (agent) {
+      fetchOptions.agent = agent;
+    }
+
+    const response = await fetch(`${baseUrl}/chat/completions`, fetchOptions);
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.choices?.[0]?.message?.content || null;
+    } else {
+      console.warn(`LLM model ${model} returned HTTP ${response.status}`);
+      return null;
+    }
+  } catch (err) {
+    console.warn(`LLM call to ${model} failed`, err);
+    return null;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { message } = await req.json();
@@ -51,74 +148,72 @@ export async function POST(req: NextRequest) {
     }
 
     const aiKey = process.env.AI_API_KEY;
-    const aiBaseUrl = process.env.AI_BASE_URL || "https://api.openai.com/v1";
-    const aiModel = process.env.AI_MODEL || "gpt-4o-mini";
+    const aiBaseUrl = process.env.AI_BASE_URL || "https://openrouter.ai/api/v1";
+    const primaryModel = process.env.AI_MODEL || "google/gemma-4-31b-it:free";
+    const backupModel = "baidu/ernie-5.5-flash-preview:free";
+    const proxyUrl = process.env.AI_PROXY_URL || process.env.OUTBOUND_FOREIGN_PROXY_URL;
 
-    // 1. Search matching regulation chunks
-    const lower = message.toLowerCase();
-    const matchedChunks = REGULATION_KNOWLEDGE_BASE.filter((item) =>
-      item.keywords.some((kw) => lower.includes(kw))
-    );
+    // 1. Hybrid RAG retrieval: search Supabase regulation_chunks with memory fallback
+    const relevantChunks = await fetchRelevantRegulations(message);
 
-    const relevantChunks = matchedChunks.length > 0 ? matchedChunks : [REGULATION_KNOWLEDGE_BASE[0]];
+    // 2. If AI_API_KEY is present, call OpenRouter with primary and backup models
+    let generatedReply: string | null = null;
+    let usedModel = "offline-heuristic";
 
-    // 2. If AI_API_KEY is present, call OpenAI-compatible API
     if (aiKey && !aiKey.includes("placeholder")) {
-      try {
-        const systemPrompt = `Вы — официальный цифровой ассистент деканата вымышленного университета.
+      const systemPrompt = `Вы — официальный цифровой ассистент деканата университета (концепт «Цифровой деканат»).
 Отвечайте строго на русском языке, опираясь ТОЛЬКО на следующие статьи регламентов:
-${relevantChunks.map((c) => `[${c.article}]: ${c.content}`).join("\n")}
+${relevantChunks.map((c) => `[${c.article}]: ${c.content}`).join("\n\n")}
 
-Обязательно цитируйте номер статьи или пункта регламента в ответе. Если вопрос вне рамок предоставленных регламентов, вежливо направьте студента в раздел «Заявки».`;
+Требования к ответу:
+1. Обязательно прямо цитируйте номер статьи или пункта регламента в квадратных скобках или жирным шрифтом.
+2. Отвечайте вежливо, лаконично и по существу вопроса студента.
+3. Если вопрос выходит за рамки указанных регламентов, вежливо порекомендуйте оформить обращение в разделе «Заявки» мобильного портала.`;
 
-        const response = await fetch(`${aiBaseUrl}/chat/completions`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${aiKey}`,
-          },
-          body: JSON.stringify({
-            model: aiModel,
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: message },
-            ],
-            temperature: 0.2,
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          const reply = data.choices?.[0]?.message?.content;
-          return NextResponse.json({
-            reply,
-            sources: relevantChunks.map((c) => ({ article: c.article, content: c.content })),
-          });
+      // Try Primary Model (google/gemma-4-31b-it:free)
+      generatedReply = await queryLLM(systemPrompt, message, primaryModel, aiKey, aiBaseUrl, proxyUrl);
+      if (generatedReply) {
+        usedModel = primaryModel;
+      } else {
+        // Fallback to Backup Free Model (baidu/ernie-5.5-flash-preview:free)
+        generatedReply = await queryLLM(systemPrompt, message, backupModel, aiKey, aiBaseUrl, proxyUrl);
+        if (generatedReply) {
+          usedModel = backupModel;
         }
-      } catch (err) {
-        console.warn("AI API request failed, falling back to heuristic engine", err);
       }
     }
 
-    // 3. Deterministic Heuristic Fallback Engine
-    const primary = relevantChunks[0];
-    let replyText = "";
+    // 3. Return LLM reply if successful
+    if (generatedReply) {
+      return NextResponse.json({
+        reply: generatedReply,
+        sources: relevantChunks.map((c) => ({ article: c.article, content: c.content })),
+        model: usedModel,
+        isFallback: false,
+      });
+    }
 
-    if (matchedChunks.length > 0) {
-      replyText = `Согласно **${primary.article}**, ${primary.content.charAt(0).toLowerCase() + primary.content.slice(1)}\n\nЕсли вам необходимо подать официальное заявление по данному вопросу, вы можете сделать это онлайн в разделе **«Заявки»** нашего портала.`;
+    // 4. Deterministic Heuristic Fallback Engine (Zero Downtime Guarantee)
+    const primary = relevantChunks[0];
+    let fallbackText = "";
+
+    if (relevantChunks.length > 0 && relevantChunks[0].article !== "Регламент университета") {
+      fallbackText = `Согласно **${primary.article}**, ${primary.content.charAt(0).toLowerCase() + primary.content.slice(1)}\n\nЕсли вам необходимо подать официальное заявление по данному вопросу, вы можете сделать это онлайн в разделе **«Заявки»** нашего портала.`;
     } else {
-      replyText = `По вашему запросу точного совпадения в выдержках регламентов не найдено. Рекомендуем ознакомиться с общими положениями либо подать индивидуальное обращение в деканат через раздел **«Заявки»**.\n\nБазовое правило (${REGULATION_KNOWLEDGE_BASE[0].article}): ${REGULATION_KNOWLEDGE_BASE[0].content}`;
+      fallbackText = `По вашему запросу точного совпадения в выдержках регламентов не найдено. Рекомендуем ознакомиться с общими положениями либо подать индивидуальное обращение в деканат через раздел **«Заявки»**.\n\nБазовое правило (${REGULATION_KNOWLEDGE_BASE[0].article}): ${REGULATION_KNOWLEDGE_BASE[0].content}`;
     }
 
     return NextResponse.json({
-      reply: replyText,
+      reply: fallbackText,
       sources: relevantChunks.map((c) => ({
         article: c.article,
         content: c.content,
       })),
-      isFallback: !aiKey,
+      model: "offline-heuristic",
+      isFallback: true,
     });
   } catch (err: unknown) {
+    console.error("AI route internal error:", err);
     return NextResponse.json(
       { error: "Внутренняя ошибка сервиса ассистента" },
       { status: 500 }
