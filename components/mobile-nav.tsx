@@ -29,19 +29,21 @@ export function MobileNav() {
               className={cn(
                 "flex flex-col items-center justify-center flex-1 h-full py-1 text-[11px] font-medium transition-all select-none",
                 isActive
-                  ? "text-primary font-semibold"
+                  ? "text-primary font-bold"
                   : "text-muted-foreground hover:text-foreground active:scale-95"
               )}
             >
               <div
                 className={cn(
-                  "p-1.5 rounded-xl transition-colors",
-                  isActive ? "bg-primary/10 text-primary" : ""
+                  "p-1.5 rounded-xl transition-all",
+                  isActive ? "bg-primary/15 text-primary scale-105 shadow-2xs" : ""
                 )}
               >
                 <Icon className={cn("w-5 h-5", isActive ? "stroke-[2.5]" : "stroke-2")} />
               </div>
-              <span className="truncate max-w-[64px]">{item.label}</span>
+              <span className={cn("truncate max-w-[64px]", isActive && "font-bold text-primary")}>
+                {item.label}
+              </span>
             </Link>
           );
         })}

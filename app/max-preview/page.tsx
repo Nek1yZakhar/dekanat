@@ -14,9 +14,9 @@ import {
   ShieldCheck,
   Wifi,
   Battery,
-  User,
   Sparkles,
   Layers,
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 export default function MaxPreviewPage() {
-  const [deviceWidth, setDeviceWidth] = useState<number>(390); // 390px (iPhone standard) or 360px (Android)
+  const [deviceWidth, setDeviceWidth] = useState<number>(390); // 390px (iPhone) or 360px (Android)
   const [copiedLink, setCopiedLink] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -34,7 +34,7 @@ export default function MaxPreviewPage() {
   const handleCopyLink = () => {
     navigator.clipboard.writeText(deepLink);
     setCopiedLink(true);
-    toast.success("Deep-Link скопирован в буфер обмена");
+    toast.success("Ссылка для MAX скопирована в буфер обмена");
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
@@ -51,7 +51,7 @@ export default function MaxPreviewPage() {
         iframeRef.current.contentWindow.history.back();
       } catch {
         // Fallback
-        iframeRef.current.src = `/${activeTab}?platform=max`;
+        iframeRef.current.src = `/${activeTab}?platform=max&embed=1`;
       }
     }
   };
@@ -59,7 +59,7 @@ export default function MaxPreviewPage() {
   const handleNavigate = (path: string) => {
     setActiveTab(path);
     if (iframeRef.current) {
-      iframeRef.current.src = `/${path}?platform=max`;
+      iframeRef.current.src = `/${path}?platform=max&embed=1`;
     }
   };
 
@@ -70,22 +70,23 @@ export default function MaxPreviewPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
-            className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/60 text-slate-300 transition-colors"
-            title="Вернуться в стандартный веб-интерфейс"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/60 text-slate-200 text-xs font-semibold transition-all shadow-sm active:scale-95"
+            title="Вернуться в основной интерфейс цифрового деканата"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4 text-blue-400" />
+            <span>Выйти в деканат</span>
           </Link>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
                 <span>Интерактивный симулятор MAX Mini App</span>
                 <Badge variant="outline" className="border-blue-500/40 text-blue-400 bg-blue-500/10 text-[10px]">
-                  TICKET-04 Dual-Mode
+                  Оболочка супер-аппа
                 </Badge>
               </h1>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Национальная платформа MAX (Госуслуги / супер-апп). Проверка мини-приложения жюри в 1 клик.
+              Национальная платформа MAX (Госуслуги / супер-апп). Проверка мини-приложения в 1 клик.
             </p>
           </div>
         </div>
@@ -99,7 +100,7 @@ export default function MaxPreviewPage() {
             className="h-8 text-xs gap-1.5 border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200"
           >
             {copiedLink ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>Deep-Link</span>
+            <span>Ссылка для MAX</span>
           </Button>
 
           <Button
@@ -155,13 +156,17 @@ export default function MaxPreviewPage() {
                 <button
                   type="button"
                   onClick={handleNativeBack}
-                  className="p-1 rounded-lg hover:bg-slate-800 text-slate-300 transition-colors active:scale-95"
+                  className="p-1 rounded-lg hover:bg-slate-800 text-slate-300 transition-colors active:scale-95 cursor-pointer"
                   title="Системная кнопка Назад супер-аппа MAX"
                 >
                   <ChevronLeft className="w-5 h-5 text-blue-400" />
                 </button>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
+                    {/* Authentic MAX Geometric "M" Vector Logo */}
+                    <svg className="w-3.5 h-3.5 text-blue-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M4 4h3.5l4.5 7.5L16.5 4H20v16h-3.5V9.5L12 17l-4.5-7.5V20H4V4z" />
+                    </svg>
                     <span className="text-xs font-bold text-white truncate">Цифровой деканат ИГУ</span>
                     <span title="Государственная верификация" className="inline-flex items-center">
                       <ShieldCheck className="w-3.5 h-3.5 text-blue-400 shrink-0" />
@@ -177,33 +182,33 @@ export default function MaxPreviewPage() {
                 <button
                   type="button"
                   onClick={handleReloadFrame}
-                  className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
-                  title="Меню мини-приложения"
+                  className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                  title="Перезагрузить экран"
                 >
                   <MoreVertical className="w-4 h-4" />
                 </button>
                 <Link
                   href="/dashboard"
-                  className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
-                  title="Закрыть мини-приложение"
+                  className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                  title="Закрыть мини-приложение и вернуться в деканат"
                 >
                   <X className="w-4 h-4" />
                 </Link>
               </div>
             </header>
 
-            {/* Embedded Live Portal Viewport */}
+            {/* Embedded Live Portal Viewport (Single-Disclaimer Guarantee) */}
             <div className="flex-1 w-full relative bg-background overflow-hidden">
               <iframe
                 ref={iframeRef}
-                src="/dashboard?platform=max"
+                src="/dashboard?platform=max&embed=1"
                 title="Цифровой деканат внутри MAX"
                 className="w-full h-full border-0 select-auto"
               />
             </div>
 
             {/* iOS/Android Home Indicator Bar */}
-            <div className="h-5 bg-background flex items-center justify-center shrink-0 z-40 select-none">
+            <div className="h-5 bg-background flex items-center justify-center shrink-0 z-40 select-none pb-safe">
               <div className="w-32 h-1 bg-slate-500/40 rounded-full" />
             </div>
           </div>
@@ -219,18 +224,19 @@ export default function MaxPreviewPage() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { id: "dashboard", label: "Главная (Дашборд)" },
-                { id: "requests", label: "Заявки и справки (Realtime)" },
+                { id: "dashboard", label: "Главная" },
+                { id: "requests", label: "Заявки и справки" },
                 { id: "schedule", label: "Расписание пар" },
                 { id: "grades", label: "Зачетка и БРС" },
-                { id: "ai", label: "AI Деканат (RAG)" },
-                { id: "staff", label: "Очередь деканата" },
+                { id: "ai", label: "AI Ассистент" },
+                { id: "staff", label: "Синхронная очередь" },
               ].map((item) => (
                 <button
                   key={item.id}
+                  type="button"
                   onClick={() => handleNavigate(item.id)}
                   className={cn(
-                    "px-3 py-2 rounded-xl text-xs font-medium text-left transition-all border",
+                    "px-3 py-2 rounded-xl text-xs font-medium text-left transition-all border select-none cursor-pointer",
                     activeTab === item.id
                       ? "bg-blue-600/20 text-blue-400 border-blue-500/40 font-semibold"
                       : "bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-800/60 hover:text-slate-200"
@@ -246,32 +252,32 @@ export default function MaxPreviewPage() {
           <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
             <div className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
               <Smartphone className="w-4 h-4 text-blue-400" />
-              <span>Ширина симулятора:</span>
+              <span>Формат смартфона:</span>
             </div>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setDeviceWidth(390)}
                 className={cn(
-                  "flex-1 py-1.5 px-3 rounded-xl text-xs font-medium transition-all border",
+                  "flex-1 py-1.5 px-3 rounded-xl text-xs font-medium transition-all border select-none cursor-pointer",
                   deviceWidth === 390
                     ? "bg-blue-600 text-white border-blue-500"
                     : "bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-800"
                 )}
               >
-                iPhone 16 (390px)
+                iPhone (390×844)
               </button>
               <button
                 type="button"
                 onClick={() => setDeviceWidth(360)}
                 className={cn(
-                  "flex-1 py-1.5 px-3 rounded-xl text-xs font-medium transition-all border",
+                  "flex-1 py-1.5 px-3 rounded-xl text-xs font-medium transition-all border select-none cursor-pointer",
                   deviceWidth === 360
                     ? "bg-blue-600 text-white border-blue-500"
                     : "bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-800"
                 )}
               >
-                Android SSoT (360px)
+                Android (360×800)
               </button>
             </div>
           </div>
@@ -280,7 +286,7 @@ export default function MaxPreviewPage() {
           <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 space-y-2.5">
             <div className="font-semibold text-slate-200 flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-blue-400" />
-              <span>Архитектура Dual-Mode (TICKET-04):</span>
+              <span>Особенности интеграции с супер-аппом MAX:</span>
             </div>
             <ul className="space-y-1.5 list-disc list-inside text-[11px] leading-relaxed text-slate-400">
               <li>

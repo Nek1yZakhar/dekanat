@@ -147,6 +147,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // 0. Academic Guardrail: Filter offtopic queries (cooking recipes, weather, horoscopes, entertainment)
+    const lowerMessage = message.toLowerCase().trim();
+    const OFFTOPIC_PATTERNS = [
+      "лазань", "рецепт", "приготов", "пирог", "суп", "кулинар", "выпечк", "блюд",
+      "погод", "гороскоп", "зодиак", "стих", "песн", "анекдот", "фильм", "сериал",
+      "похудет", "диета", "код на python", "напиши скрипт", "сыграем", "сказка"
+    ];
+
+    const isOfftopic = OFFTOPIC_PATTERNS.some((pattern) => lowerMessage.includes(pattern));
+    if (isOfftopic) {
+      return NextResponse.json({
+        reply: "Я специализированный помощник цифрового деканата ИГУ и консультирую только по вопросам учебного процесса, расписания, стипендий, сессий и регламентов университета. Пожалуйста, задайте вопрос по вашей учебе.",
+        sources: [],
+        model: "guardrail-refusal",
+        isFallback: false,
+      });
+    }
+
     const aiKey = process.env.AI_API_KEY;
     const aiBaseUrl = process.env.AI_BASE_URL || "https://openrouter.ai/api/v1";
     const primaryModel = process.env.AI_MODEL || "google/gemma-4-31b-it:free";
@@ -161,14 +179,20 @@ export async function POST(req: NextRequest) {
     let usedModel = "offline-heuristic";
 
     if (aiKey && !aiKey.includes("placeholder")) {
-      const systemPrompt = `Вы — официальный цифровой ассистент деканата университета (концепт «Цифровой деканат»).
+      const systemPrompt = `Вы — официальный цифровой ассистент деканата университета (концепт «Цифровой деканат ИГУ»).
+Ваша компетенция строго ограничена вопросами учебного процесса, расписания, сессий, пересдач, стипендий, академических отпусков и регламентов университета.
+
+КРИТИЧЕСКИ ВАЖНОЕ ПРАВИЛО:
+Если студент задает посторонний вопрос (кулинарные рецепты, погода, гороскопы, сочинение стихов, развлечения и т.д.), ВЫ ОБЯЗАНЫ ВЕЖЛИВО ОТКАЗАТЬ:
+«Я специализированный помощник цифрового деканата ИГУ и консультирую только по вопросам учебного процесса, расписания, стипендий, сессий и регламентов университета. Пожалуйста, задайте вопрос по вашей учебе.»
+
 Отвечайте строго на русском языке, опираясь ТОЛЬКО на следующие статьи регламентов:
 ${relevantChunks.map((c) => `[${c.article}]: ${c.content}`).join("\n\n")}
 
 Требования к ответу:
 1. Обязательно прямо цитируйте номер статьи или пункта регламента в квадратных скобках или жирным шрифтом.
 2. Отвечайте вежливо, лаконично и по существу вопроса студента.
-3. Если вопрос выходит за рамки указанных регламентов, вежливо порекомендуйте оформить обращение в разделе «Заявки» мобильного портала.`;
+3. Если вопрос касается подачи официального заявления, вежливо порекомендуйте оформить обращение в разделе «Заявки» мобильного портала.`;
 
       // Try Primary Model (google/gemma-4-31b-it:free)
       generatedReply = await queryLLM(systemPrompt, message, primaryModel, aiKey, aiBaseUrl, proxyUrl);

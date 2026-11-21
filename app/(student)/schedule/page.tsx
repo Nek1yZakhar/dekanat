@@ -3,26 +3,22 @@
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Clock, MapPin, User, AlertCircle, Calendar as CalendarIcon } from "lucide-react";
+import {
+  Clock,
+  MapPin,
+  User,
+  AlertCircle,
+  Calendar as CalendarIcon,
+  ChevronRight,
+  BookOpen,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface LessonItem {
-  id: string;
-  discipline: string;
-  kind: "lecture" | "seminar" | "lab" | "exam";
-  weekday: number;
-  start_time: string;
-  end_time: string;
-  room: string;
-  teacher: string;
-  change?: {
-    cancelled?: boolean;
-    new_room?: string;
-    new_time?: string;
-    reason?: string;
-  };
-}
+import {
+  SCHEDULE_GROUPS,
+  getLessonsByGroup,
+  LessonItem,
+} from "@/lib/schedule-data";
+import { SubjectSheet } from "@/components/subject-sheet";
 
 const WEEKDAYS = [
   { day: 1, short: "Пн", full: "Понедельник" },
@@ -33,81 +29,14 @@ const WEEKDAYS = [
   { day: 6, short: "Сб", full: "Суббота" },
 ];
 
-const MOCK_LESSONS: LessonItem[] = [
-  {
-    id: "l1",
-    discipline: "Математический анализ",
-    kind: "lecture",
-    weekday: 1,
-    start_time: "09:00",
-    end_time: "10:30",
-    room: "ауд. 302",
-    teacher: "Смирнов А.А.",
-  },
-  {
-    id: "l2",
-    discipline: "Базы данных и SQL",
-    kind: "lab",
-    weekday: 1,
-    start_time: "10:45",
-    end_time: "12:15",
-    room: "комп. класс 2",
-    teacher: "Петров П.П.",
-    change: {
-      new_room: "ауд. 410",
-      reason: "Плановая профилактика компьютерного класса",
-    },
-  },
-  {
-    id: "l3",
-    discipline: "Проектирование веб-систем",
-    kind: "seminar",
-    weekday: 2,
-    start_time: "13:00",
-    end_time: "14:30",
-    room: "ауд. 415",
-    teacher: "Волков В.В.",
-  },
-  {
-    id: "l4",
-    discipline: "Алгоритмы и структуры данных",
-    kind: "lecture",
-    weekday: 3,
-    start_time: "09:00",
-    end_time: "10:30",
-    room: "ауд. 210",
-    teacher: "Иванов И.И.",
-    change: {
-      cancelled: true,
-      reason: "Участие преподавателя в конференции МГИМО",
-    },
-  },
-  {
-    id: "l5",
-    discipline: "Машинное обучение",
-    kind: "seminar",
-    weekday: 4,
-    start_time: "10:45",
-    end_time: "12:15",
-    room: "ауд. 305",
-    teacher: "Ковалева Н.С.",
-  },
-  {
-    id: "l6",
-    discipline: "Информационная безопасность",
-    kind: "lecture",
-    weekday: 5,
-    start_time: "12:30",
-    end_time: "14:00",
-    room: "ауд. 101",
-    teacher: "Сергеев С.С.",
-  },
-];
-
 export default function SchedulePage() {
-  const [selectedDay, setSelectedDay] = useState(1);
+  const [selectedGroupId, setSelectedGroupId] = useState<string>("07131-DB");
+  const [selectedDay, setSelectedDay] = useState<number>(1);
+  const [activeLesson, setActiveLesson] = useState<LessonItem | null>(null);
 
-  const currentLessons = MOCK_LESSONS.filter((l) => l.weekday === selectedDay);
+  const currentGroup =
+    SCHEDULE_GROUPS.find((g) => g.id === selectedGroupId) || SCHEDULE_GROUPS[0];
+  const currentLessons = getLessonsByGroup(selectedGroupId, selectedDay);
 
   const getKindBadge = (kind: LessonItem["kind"]) => {
     switch (kind) {
@@ -115,35 +44,63 @@ export default function SchedulePage() {
         return <Badge variant="secondary">Лекция</Badge>;
       case "seminar":
         return <Badge variant="outline">Семинар</Badge>;
+      case "practice":
+        return <Badge variant="outline">Практика</Badge>;
       case "lab":
         return <Badge variant="default">Лабораторная</Badge>;
       case "exam":
         return <Badge variant="destructive">Экзамен</Badge>;
+      default:
+        return <Badge variant="secondary">Занятие</Badge>;
     }
   };
 
   return (
     <div className="space-y-4">
+      {/* Page Header */}
       <div>
         <h1 className="text-xl font-bold tracking-tight">Расписание занятий</h1>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Группа ЦД-23-1 • 1 семестр 2026/2027
+          {currentGroup.faculty} • {currentGroup.semester}
         </p>
       </div>
 
-      {/* Weekday Selector */}
+      {/* Segmented Group Switcher */}
+      <div className="p-1 rounded-2xl bg-muted/60 border border-border grid grid-cols-1 sm:grid-cols-2 gap-1">
+        {SCHEDULE_GROUPS.map((g) => {
+          const isSelected = selectedGroupId === g.id;
+          return (
+            <button
+              key={g.id}
+              type="button"
+              onClick={() => setSelectedGroupId(g.id)}
+              className={cn(
+                "py-2 px-3 rounded-xl text-xs font-semibold transition-all text-center select-none cursor-pointer",
+                isSelected
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-background/50 active:scale-98"
+              )}
+            >
+              {g.shortName}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Weekday Selector (SSoT Highlighting) */}
       <div className="grid grid-cols-6 gap-1 bg-muted/60 p-1 rounded-2xl border border-border">
         {WEEKDAYS.map((w) => {
           const isSelected = selectedDay === w.day;
           return (
             <button
               key={w.day}
+              type="button"
               onClick={() => setSelectedDay(w.day)}
               className={cn(
-                "py-2 rounded-xl text-center text-xs font-semibold transition-all select-none",
+                "py-2 rounded-xl text-center text-xs font-semibold transition-all select-none cursor-pointer",
                 isSelected
-                  ? "bg-background text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground active:scale-95"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-background text-muted-foreground hover:bg-muted hover:text-foreground border border-border active:scale-95"
               )}
             >
               <div>{w.short}</div>
@@ -152,17 +109,23 @@ export default function SchedulePage() {
         })}
       </div>
 
-      <div className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 px-1">
-        <CalendarIcon className="w-3.5 h-3.5 text-primary" />
-        <span>{WEEKDAYS.find((w) => w.day === selectedDay)?.full}</span>
+      {/* Current Day Label & Quick Info */}
+      <div className="text-xs font-semibold text-muted-foreground flex items-center justify-between px-1">
+        <div className="flex items-center gap-1.5">
+          <CalendarIcon className="w-3.5 h-3.5 text-primary" />
+          <span>{WEEKDAYS.find((w) => w.day === selectedDay)?.full}</span>
+        </div>
+        <span className="text-[11px] text-muted-foreground font-normal">
+          Нажмите на пару для просмотра ДЗ
+        </span>
       </div>
 
       {/* Lessons List */}
       <div className="space-y-3">
         {currentLessons.length === 0 ? (
           <Card className="border-dashed p-6 text-center text-muted-foreground">
-            <p className="text-sm font-medium">В этот день занятий нет</p>
-            <p className="text-xs mt-1">Отличное время для подготовки к сессии или отдыха!</p>
+            <p className="text-sm font-medium">В этот день аудиторных занятий нет</p>
+            <p className="text-xs mt-1">День самостоятельной работы и подготовки к промежуточным аттестациям.</p>
           </Card>
         ) : (
           currentLessons.map((item) => {
@@ -170,8 +133,9 @@ export default function SchedulePage() {
             return (
               <Card
                 key={item.id}
+                onClick={() => setActiveLesson(item)}
                 className={cn(
-                  "border-border transition-all",
+                  "border-border transition-all cursor-pointer hover:border-primary/50 hover:shadow-xs active:scale-[0.99]",
                   isCancelled && "opacity-75 bg-destructive/5 border-destructive/20"
                 )}
               >
@@ -192,29 +156,53 @@ export default function SchedulePage() {
                     </div>
                   </div>
 
-                  <CardTitle className={cn("text-base mt-1", isCancelled && "line-through text-muted-foreground")}>
-                    {item.discipline}
-                  </CardTitle>
+                  <div className="flex items-start justify-between gap-2 mt-1">
+                    <CardTitle
+                      className={cn(
+                        "text-base leading-snug",
+                        isCancelled && "line-through text-muted-foreground"
+                      )}
+                    >
+                      {item.discipline}
+                    </CardTitle>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                  </div>
                 </CardHeader>
 
                 <CardContent className="space-y-2 pt-0 text-xs text-muted-foreground">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5" />
+                      <MapPin className="w-3.5 h-3.5 shrink-0" />
                       <span className={item.change?.new_room ? "font-semibold text-primary" : ""}>
-                        {item.change?.new_room ? `${item.change.new_room} (вместо ${item.room})` : item.room}
+                        {item.change?.new_room
+                          ? `${item.change.new_room} (вместо ${item.room})`
+                          : item.room}
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5" />
-                      <span>{item.teacher}</span>
+                      <User className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate max-w-[190px]">{item.teacher}</span>
                     </div>
                   </div>
 
+                  {item.homework && (
+                    <div className="flex items-center gap-1.5 text-[11px] text-foreground font-medium bg-muted/40 px-2.5 py-1.5 rounded-lg border border-border/60">
+                      <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span className="truncate">ДЗ: {item.homework.task}</span>
+                    </div>
+                  )}
+
                   {item.change && (
-                    <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-900 dark:text-amber-200 text-[11px] flex items-start gap-1.5 mt-1">
+                    <div
+                      title={
+                        item.change.reason
+                          ? `Причина: ${item.change.reason}. Аудитория: ${item.change.new_room || item.room}`
+                          : "Изменение в расписании"
+                      }
+                      className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-950 dark:text-amber-200 text-[11px] flex items-start gap-1.5 mt-1"
+                    >
                       <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
-                      <span>{item.change.reason || "Изменение в расписании"}</span>
+                      <span className="leading-snug">{item.change.reason || "Изменение в расписании"}</span>
                     </div>
                   )}
                 </CardContent>
@@ -223,6 +211,13 @@ export default function SchedulePage() {
           })
         )}
       </div>
+
+      {/* Interactive Subject Details Sheet */}
+      <SubjectSheet
+        lesson={activeLesson}
+        isOpen={Boolean(activeLesson)}
+        onClose={() => setActiveLesson(null)}
+      />
     </div>
   );
 }

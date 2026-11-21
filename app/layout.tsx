@@ -7,6 +7,15 @@ import { Toaster } from "sonner";
 export const metadata: Metadata = {
   title: "Цифровой деканат — концепт",
   description: "Концепт цифрового деканата для конкурса MGIMO × AI Challenge. Не является официальным сервисом ИГУ.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Деканат ИГУ",
+  },
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
   robots: {
     index: false,
     follow: false,

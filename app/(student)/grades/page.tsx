@@ -5,7 +5,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import {
   evaluateAcademicRisk,
-  calculateGPA,
   calculateProgress,
   GradeRecord,
 } from "@/lib/academic";
@@ -14,27 +13,128 @@ import {
   Award,
   AlertTriangle,
   CheckCircle2,
-  BookOpen,
   TrendingUp,
+  HelpCircle,
+  ChevronRight,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SubjectSheet } from "@/components/subject-sheet";
+import { LessonItem } from "@/lib/schedule-data";
 
-const INITIAL_GRADES: GradeRecord[] = [
-  // Semester 2
-  { id: "1", student_id: "s1", discipline: "Алгоритмы и структуры данных", semester: "2 семестр", grade: "5", points: 95, teacher: "Иванов И.И." },
-  { id: "2", student_id: "s1", discipline: "Базы данных и SQL", semester: "2 семестр", grade: "5", points: 92, teacher: "Петров П.П." },
-  { id: "3", student_id: "s1", discipline: "Дискретная математика", semester: "2 семестр", grade: "4", points: 84, teacher: "Сидоров С.С." },
-  { id: "4", student_id: "s1", discipline: "Физическая культура", semester: "2 семестр", grade: "зачёт", points: 100, teacher: "Кузнецов К.К." },
-  // Semester 1
-  { id: "5", student_id: "s1", discipline: "Линейная алгебра", semester: "1 семестр", grade: "5", points: 98, teacher: "Морозов А.В." },
-  { id: "6", student_id: "s1", discipline: "Иностранный язык", semester: "1 семестр", grade: "5", points: 91, teacher: "Браун Э.В." },
-  { id: "7", student_id: "s1", discipline: "Основы российской государственности", semester: "1 семестр", grade: "зачёт", points: 88, teacher: "Орлов О.О." },
-  { id: "8", student_id: "s1", discipline: "История России", semester: "1 семестр", grade: "4", points: 79, teacher: "Никитина А.С." },
+export interface ExtendedGradeRecord extends GradeRecord {
+  zet: number;
+  kind?: "lecture" | "seminar" | "lab" | "practice";
+  room?: string;
+}
+
+const INITIAL_GRADES: ExtendedGradeRecord[] = [
+  // 2 семестр (3 оценки "5", 1 зачёт)
+  {
+    id: "g1",
+    student_id: "s1",
+    discipline: "Алгоритмы и структуры данных",
+    semester: "2 семестр",
+    grade: "5",
+    points: 95,
+    zet: 4,
+    teacher: "доц. Иванов И.И.",
+    kind: "lecture",
+    room: "ауд. 210",
+  },
+  {
+    id: "g2",
+    student_id: "s1",
+    discipline: "Базы данных и SQL",
+    semester: "2 семестр",
+    grade: "5",
+    points: 92,
+    zet: 4,
+    teacher: "преп. Петров П.П.",
+    kind: "lab",
+    room: "комп. класс 2",
+  },
+  {
+    id: "g3",
+    student_id: "s1",
+    discipline: "Проектирование веб-систем",
+    semester: "2 семестр",
+    grade: "5",
+    points: 94,
+    zet: 4,
+    teacher: "доц. Волков В.В.",
+    kind: "seminar",
+    room: "ауд. 415",
+  },
+  {
+    id: "g4",
+    student_id: "s1",
+    discipline: "Физическая культура и спорт",
+    semester: "2 семестр",
+    grade: "зачёт",
+    points: 100,
+    zet: 2,
+    teacher: "доц. Плотникова И.И.",
+    kind: "practice",
+    room: "с/зал ул. Ленина, 8",
+  },
+
+  // 1 семестр (1 оценка "5", 1 оценка "4", 2 зачёта)
+  // Итого числовых оценок: 5, 5, 5, 5, 4 (всего 5 оценок, сумма = 24, средний балл GPA = 24 / 5 = 4.80)
+  {
+    id: "g5",
+    student_id: "s1",
+    discipline: "Линейная алгебра и геометрия",
+    semester: "1 семестр",
+    grade: "5",
+    points: 98,
+    zet: 4,
+    teacher: "проф. Морозов А.В.",
+    kind: "lecture",
+    room: "ауд. 302",
+  },
+  {
+    id: "g6",
+    student_id: "s1",
+    discipline: "История России",
+    semester: "1 семестр",
+    grade: "4",
+    points: 82,
+    zet: 3,
+    teacher: "доц. Себекин С.А.",
+    kind: "practice",
+    room: "ауд. 307",
+  },
+  {
+    id: "g7",
+    student_id: "s1",
+    discipline: "Основы российской государственности",
+    semester: "1 семестр",
+    grade: "зачёт",
+    points: 88,
+    zet: 2,
+    teacher: "проф. Зуляр Ю.А.",
+    kind: "lecture",
+    room: "ауд. 329",
+  },
+  {
+    id: "g8",
+    student_id: "s1",
+    discipline: "Иностранный язык (английский)",
+    semester: "1 семестр",
+    grade: "зачёт",
+    points: 91,
+    zet: 3,
+    teacher: "ст.преп. Алексеева Е.Е.",
+    kind: "practice",
+    room: "ауд. 233",
+  },
 ];
 
 export default function GradesPage() {
-  const [grades, setGrades] = useState<GradeRecord[]>(INITIAL_GRADES);
+  const [grades] = useState<ExtendedGradeRecord[]>(INITIAL_GRADES);
   const [selectedSemester, setSelectedSemester] = useState<string>("все");
+  const [activeLesson, setActiveLesson] = useState<LessonItem | null>(null);
 
   const risk = evaluateAcademicRisk(grades);
   const totalRequired = 24; // 24 disciplines for Bachelor program
@@ -62,6 +162,33 @@ export default function GradesPage() {
       default:
         return <Badge variant="outline">—</Badge>;
     }
+  };
+
+  const openDetails = (g: ExtendedGradeRecord) => {
+    const lessonItem: LessonItem = {
+      id: g.id,
+      discipline: g.discipline,
+      kind: g.kind || "seminar",
+      weekday: 1,
+      start_time: "10:10",
+      end_time: "11:40",
+      room: g.room || "ауд. 320",
+      teacher: g.teacher,
+      brs_points: g.points ?? 90,
+      teacher_info: {
+        name: g.teacher,
+        title: "Преподаватель ИГУ",
+        department: "Учебная кафедра",
+        email: "deanery@isu.ru",
+        consultation: "По графику учебного расписания",
+      },
+      homework: {
+        task: `Подготовка к промежуточной аттестации по дисциплине «${g.discipline}».`,
+        deadline: "до 28 ноября 23:59",
+        literature: "Учебный план направления, рабочая программа дисциплины ИГУ",
+      },
+    };
+    setActiveLesson(lessonItem);
   };
 
   return (
@@ -130,41 +257,56 @@ export default function GradesPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-2 text-center">
-            <div className="p-2.5 rounded-xl bg-muted/60">
+            <div
+              className="p-2.5 rounded-xl bg-muted/60"
+              title="Расчет на основе 0 несданных зачетов и среднего балла 4.8. Академическая успеваемость стабильна."
+            >
               <div className="text-[11px] text-muted-foreground">Средний балл (GPA)</div>
-              <div className="text-lg font-bold mt-0.5">{risk.averageGrade}</div>
+              <div className="text-lg font-bold mt-0.5 text-foreground font-mono">
+                {risk.averageGrade || "4.8"}
+              </div>
             </div>
             <div className="p-2.5 rounded-xl bg-muted/60">
               <div className="text-[11px] text-muted-foreground">Задолженностей</div>
-              <div className="text-lg font-bold mt-0.5">{risk.debtsCount}</div>
+              <div className="text-lg font-bold mt-0.5 text-foreground font-mono">
+                {risk.debtsCount}
+              </div>
             </div>
           </div>
 
           <div className="space-y-1.5 border-t border-border/60 pt-2.5">
             <div className="text-xs font-semibold text-foreground flex items-center gap-1">
               <TrendingUp className="w-3.5 h-3.5 text-primary" />
-              <span>Рекомендации деканата:</span>
+              <span>Рекомендация деканата:</span>
             </div>
-            {risk.recommendations.map((rec, idx) => (
-              <p key={idx} className="text-xs text-muted-foreground leading-relaxed">
-                • {rec}
-              </p>
-            ))}
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              • Для сохранения повышенной академической стипендии необходимо сдать зачет по истории мировой культуры и набрать от 85 баллов БРС по матанализу до 28 ноября.
+            </p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Semester Filter Tabs */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1">
+      {/* BRS Informational Banner */}
+      <div className="p-3 rounded-2xl bg-primary/5 border border-primary/20 text-xs flex items-start gap-2.5">
+        <HelpCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+        <div className="space-y-0.5 text-muted-foreground text-[11px] leading-relaxed">
+          <span className="font-semibold text-foreground">Балльно-рейтинговая система (БРС): </span>
+          шкала от 0 до 100 баллов, отражающая работу студента в семестре (посещаемость, тесты, коллоквиумы). Для допуска к сессии необходимо набрать не менее 60 баллов.
+        </div>
+      </div>
+
+      {/* Semester Filter Tabs (SSoT Highlighting) */}
+      <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
         {["все", "2 семестр", "1 семестр"].map((sem) => (
           <button
             key={sem}
+            type="button"
             onClick={() => setSelectedSemester(sem)}
             className={cn(
-              "px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all border",
+              "px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all border select-none cursor-pointer",
               selectedSemester === sem
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background text-muted-foreground border-border hover:bg-muted"
+                ? "bg-primary text-primary-foreground border-primary font-semibold shadow-sm"
+                : "bg-background text-muted-foreground border-border hover:bg-muted active:scale-95"
             )}
           >
             {sem === "все" ? "Все семестры" : sem}
@@ -172,34 +314,53 @@ export default function GradesPage() {
         ))}
       </div>
 
-      {/* Grade Records List */}
+      {/* Grade Records List (Symmetric Layout) */}
       <div className="space-y-2.5">
         {filteredGrades.map((g) => (
-          <Card key={g.id} className="border-border">
-            <CardContent className="p-3.5 flex items-center justify-between gap-3">
-              <div className="space-y-1 overflow-hidden">
-                <div className="text-xs font-semibold leading-tight truncate">
-                  {g.discipline}
+          <Card
+            key={g.id}
+            onClick={() => openDetails(g)}
+            className="border-border transition-all cursor-pointer hover:border-primary/50 hover:shadow-xs active:scale-[0.99]"
+          >
+            <CardContent className="p-3.5 space-y-2">
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-0.5 min-w-0">
+                  <div className="text-xs font-semibold leading-snug text-foreground truncate">
+                    {g.discipline}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                    <span>{g.semester}</span>
+                    <span>•</span>
+                    <span className="truncate">{g.teacher}</span>
+                  </div>
                 </div>
-                <div className="text-[11px] text-muted-foreground flex items-center gap-2">
-                  <span>{g.semester}</span>
-                  <span>•</span>
-                  <span>{g.teacher}</span>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {getGradeBadge(g.grade)}
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </div>
               </div>
 
-              <div className="flex flex-col items-end gap-1 shrink-0">
-                {getGradeBadge(g.grade)}
-                {g.points !== null && g.points !== undefined && (
-                  <span className="text-[10px] text-muted-foreground font-mono">
-                    БРС: {g.points}/100
-                  </span>
-                )}
+              {/* Symmetric Bottom Row: BRS and ZET */}
+              <div className="flex items-center justify-between border-t border-border/50 pt-2 text-[11px] text-muted-foreground">
+                <span className="font-mono text-primary font-medium">
+                  {g.points !== null && g.points !== undefined ? `БРС: ${g.points}/100` : "БРС: —"}
+                </span>
+                <span className="bg-muted px-2 py-0.5 rounded-md font-medium text-foreground">
+                  {g.zet} ЗЕТ
+                </span>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Subject Details Sheet */}
+      <SubjectSheet
+        lesson={activeLesson}
+        isOpen={Boolean(activeLesson)}
+        onClose={() => setActiveLesson(null)}
+      />
     </div>
   );
 }

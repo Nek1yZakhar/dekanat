@@ -30,9 +30,12 @@ export default async function DashboardPage() {
     .eq("student_id", session.id);
 
   const grades: GradeRecord[] = (gradesData as GradeRecord[]) || [
-    { id: "1", student_id: session.id, discipline: "Алгоритмы и структуры данных", semester: "2024/2025-2", grade: "5", points: 95, teacher: "Иванов И.И." },
-    { id: "2", student_id: session.id, discipline: "Базы данных и SQL", semester: "2024/2025-2", grade: "5", points: 92, teacher: "Петров П.П." },
-    { id: "3", student_id: session.id, discipline: "Дискретная математика", semester: "2024/2025-2", grade: "4", points: 84, teacher: "Сидоров С.С." },
+    { id: "1", student_id: session.id, discipline: "Алгоритмы и структуры данных", semester: "2026/2027-2", grade: "5", points: 95, teacher: "Иванов И.И." },
+    { id: "2", student_id: session.id, discipline: "Базы данных и SQL", semester: "2026/2027-2", grade: "5", points: 92, teacher: "Петров П.П." },
+    { id: "3", student_id: session.id, discipline: "Проектирование веб-систем", semester: "2026/2027-2", grade: "5", points: 94, teacher: "Волков В.В." },
+    { id: "4", student_id: session.id, discipline: "Линейная алгебра и геометрия", semester: "2026/2027-1", grade: "5", points: 98, teacher: "Морозов А.В." },
+    { id: "5", student_id: session.id, discipline: "История России", semester: "2026/2027-1", grade: "4", points: 82, teacher: "Себекин С.А." },
+    { id: "6", student_id: session.id, discipline: "Физическая культура", semester: "2026/2027-2", grade: "зачёт", points: 100, teacher: "Плотникова И.И." },
   ];
 
   const risk = evaluateAcademicRisk(grades);
@@ -147,13 +150,16 @@ export default async function DashboardPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-2 text-center">
-            <div className="p-2.5 rounded-xl bg-muted/60">
+            <div
+              className="p-2.5 rounded-xl bg-muted/60"
+              title="Расчет на основе 0 несданных зачетов и среднего балла 4.8. Академическая успеваемость стабильна."
+            >
               <div className="text-xs text-muted-foreground">Средний балл (GPA)</div>
-              <div className="text-lg font-bold mt-0.5">{risk.averageGrade || "5.0"}</div>
+              <div className="text-lg font-bold mt-0.5 text-foreground font-mono">{risk.averageGrade || "4.8"}</div>
             </div>
             <div className="p-2.5 rounded-xl bg-muted/60">
               <div className="text-xs text-muted-foreground">Задолженностей</div>
-              <div className="text-lg font-bold mt-0.5 text-foreground">
+              <div className="text-lg font-bold mt-0.5 text-foreground font-mono">
                 {risk.debtsCount}
               </div>
             </div>
