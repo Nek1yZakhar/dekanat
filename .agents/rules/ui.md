@@ -1,26 +1,44 @@
 # User Interface & Frontend Invariants
 
-## 1. Mobile-First Standard (360px Viewport)
-- All layouts, modals, tables, and cards MUST render without horizontal scroll or truncated text at a viewport width of 360px (`@media (min-width: 360px)`).
-- Touch targets for interactive elements (buttons, tab items, dropdown triggers) must have a minimum tap area of 44x44px.
-- Use the bottom navigation bar pattern for student mobile flows (`app/(student)/layout.tsx`).
+## 1. Mobile-First & Desktop Ergonomics (Single-Scrollbar Policy)
+- **Mobile-First Standard (360px Viewport)**:
+  - All layouts, modals, tables, and cards MUST render without horizontal scroll or truncated text at a viewport width of 360px (`@media (min-width: 360px)`).
+  - Touch targets for interactive elements (buttons, tab items, dropdown triggers) must have a minimum tap area of 44x44px.
+- **Desktop Ergonomics (No Parasitic Vertical Scrollbars)**:
+  - On desktop and laptop viewports (1366px – 1920px), pages MUST NOT spawn unnecessary right vertical scrollbars when content naturally fits in the viewport. Vertically constrain padding (`py-`, `my-`, `min-h-screen`, `pb-safe`) to prevent 1-5px overflow scrollbars.
+  - Dual nested vertical scrollbars (`overflow-y: auto` inside a scrolling page container) are strictly prohibited.
+  - Horizontal scrollbars on pill-filters, tags, and quick-prompt chips are banned. Use `scrollbar-none` or hidden native scroll.
 
-## 2. Russian UI Copy & Tone (Sasha Skill Standard)
-- All visible text, buttons, modals, badges, toast alerts, and empty states MUST be written in natural, grammatically correct Russian.
-- Use action verbs for buttons: "Подать заявку", "Войти", "Обновить", "Перейти".
-- Anti-AI-slop copy: No unnatural corporate cliches or machine-translated phrasing.
+## 2. Zero-Emoji Invariant (Strict Vector SVG Only)
+- **Absolute Ban on Unicode Emojis**: Unicode emojis (📱, 👨‍🎓, 🏛️, 🏆, ⚠️, 🚀, 💬, etc.) are strictly forbidden in production HTML, JSX, status badges, headers, labels, and action buttons.
+- **Semantic Vector Icons**: Every visual indicator, badge, and button icon must use pure inline SVG icons from `lucide-react` with explicit sizing and semantic coloring.
 
-## 3. Design System & Tokens
-- Use Tailwind CSS v4 with OKLCH theme tokens and shadcn/ui primitives.
-- Never use ad-hoc arbitrary hex colors (`#1a2b3c`). Rely on semantic tokens (`bg-background`, `text-foreground`, `bg-primary`, `border-border`, `bg-muted`).
-- Zero Unicode emojis in buttons or status indicators — use semantic inline SVG icons (`lucide-react`).
+## 3. WCAG AA Color Contrast & Anti-Low-Contrast Badges
+- **Minimum Contrast Ratio**: Text-to-background contrast must strictly meet or exceed 4.5:1.
+- **Anti-Low-Contrast Policy**: Light text on light pastel backgrounds (e.g., green text `#22c55e` on light green `#dcfce7`, pale yellow on pale yellow) is strictly prohibited.
+- **Status Badge Contract**:
+  - *Success / Ready*: Deep dark emerald text (`text-emerald-800 dark:text-emerald-300`) on pastel background (`bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800`).
+  - *Warning / In Progress / Caution*: Dark amber text (`text-amber-900 dark:text-amber-200`) on pastel amber background (`bg-amber-100 dark:bg-amber-950/60 border border-amber-300`).
+  - *Danger / Debt / Rejected*: Dark crimson text (`text-rose-900 dark:text-rose-200`) on pastel red (`bg-rose-100 dark:bg-rose-950/60 border border-rose-300`).
+  - *Informational / Secondary*: High-contrast neutral or slate tokens.
+- **Semantic Tooltips (Living Semantic Triptych)**:
+  - Status badges and warning icons (e.g., schedule room changes, academic risk) must provide an informative hover tooltip: (1) what occurred, (2) the underlying rule/source, (3) actionable next step for the student.
 
-## 4. Mandatory States
-- Every list and data-fetching component must handle 4 states:
-  1. `Loading` (skeleton or pulse loader)
-  2. `Empty` (friendly Russian explanation with an action button)
-  3. `Error` (actionable recovery message)
-  4. `Success / Content`
+## 4. Active State SSoT & Synchronous Highlighting
+- Every active navigation item in `mobile-nav.tsx`, day of the week selector in `/schedule`, semester filter in `/grades`, and moderation queue tab in `/staff` MUST have an unambiguous, high-contrast active state (`bg-primary text-primary-foreground` or prominent contrasting border/fill).
+- Inactive items must maintain subtle muted styling and clearly differentiate from the active selection.
 
-## 5. Contest Disclaimer Banner
-- The disclaimer banner: `Концепт для конкурса. Не является официальным сервисом ИГУ` MUST remain visible on every page in `RootLayout`.
+## 5. Staff Role Isolation (Zero Student Bleed)
+- Staff users (`role === 'staff'`) must NEVER see student dashboards, student GPA metrics, diploma progress cards, or student schedules.
+- Any attempt by an authenticated staff member to access `/dashboard`, `/grades`, `/schedule`, or `/ai` must trigger an automatic server-side or layout-level redirect to `/staff`.
+- The staff header must display staff identity: *«Соколова Елена Павловна • Деканат (Модератор)»*, completely omitting student faculty/group identifiers and student navigation.
+
+## 6. Zero Internal Jargon in UI (Sasha Standard)
+- All UI copy must be written in pure, natural Russian without internal developer jargon, ticket IDs, or machine-translated buzzwords.
+- Strictly forbidden in user-facing UI: `TICKET-04`, `Dual-Mode`, `Deep-Link`, `SSoT`, `Dashboard`, `Realtime`, `RAG` (use «Главная», «Синхронная очередь», «Ссылка для приложения», «Регуляторный ассистент»).
+- Acronyms such as `БРС` (Балльно-рейтинговая система) and `GPA` must be accompanied by explanatory Russian tooltips.
+
+## 7. Contest Disclaimer Banner Ergonomics
+- The contest disclaimer (*«Концепт для конкурса. Не является официальным сервисом ИГУ»*) must feature high-contrast, easily readable styling.
+- Provide a dismiss/collapse button (SVG `X`) allowing evaluators to temporarily hide the banner and inspect the clean viewport.
+- The «Оболочка MAX» trigger must feature a prominent, contrasting accent color (blue/indigo), never pale orange on yellow.

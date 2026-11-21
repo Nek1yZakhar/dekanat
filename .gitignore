@@ -12,6 +12,20 @@
 # misc
 .DS_Store
 *.pem
+*.key
+*.cert
+*.pfx
+*.p12
+*.tmp
+*.bak
+*.old
+
+# user uploaded raw data and spreadsheets
+*.xlsx
+*.xls
+*.csv
+/backups
+/dumps
 
 # debug logs
 npm-debug.log*

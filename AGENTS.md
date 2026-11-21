@@ -34,11 +34,17 @@
 - **Telegram Mini App (TICKET-05)**: Status is `SKIPPED (Deferred)` in favor of the MAX super-app and web PWA.
 
 ## Compliance Guardrails
-1. **Disclaimer Invariant**: Every screen must display the contest disclaimer banner: "Концепт для конкурса. Не является официальным сервисом ИГУ".
+1. **Disclaimer Invariant**: Every screen must display the contest disclaimer banner: "Концепт для конкурса. Не является официальным сервисом ИГУ" with high-contrast text and a dismiss/collapse button.
 2. **Zero Real Personal Data**: 100% fictional records, names, grades, and faculty identities.
 3. **Strict RLS**: Direct database operations must never bypass Row-Level Security for student contexts.
 4. **Server-Only AI Keys**: AI provider keys and service role keys must never reach client bundles.
-5. **Post-Contest Decommissioning (TICKET-09)**: All cloud resources (VM, unattached 10 GB disk, public IP) must be terminated on 29.11.2026 at 12:00 MSK per `specs/TICKET-09-post-contest-decommissioning.md` to prevent card charges.
+5. **Zero-Emoji Policy (Strict Vector SVG Only)**: Unicode emojis are strictly forbidden in production HTML, JSX, badges, and action buttons. Semantic inline SVGs (`lucide-react`) only.
+6. **Single-Scrollbar & Desktop Ergonomics**: No parasitic vertical scrollbars on desktop viewports (1366px–1920px). No dual nested scrollbars. Hidden scrollbars on horizontal filter chips (`scrollbar-none`).
+7. **WCAG AA Color Contrast**: All badges, warning banners, and text elements must meet or exceed 4.5:1 contrast. No pale text on light pastel backgrounds (e.g. green-on-green, yellow-on-yellow).
+8. **Staff Role Isolation**: Staff (`role === 'staff'`) are strictly isolated from student views and redirected to `/staff`. Staff header displays staff identity only.
+9. **Zero Internal Jargon in UI (Sasha Standard)**: Technical terms (`TICKET-04`, `Dual-Mode`, `SSoT`, `RAG`, `Dashboard`) must never appear in user-facing UI. Pure Russian interface copy.
+10. **Academic AI Guardrails & Offtopic Refusal**: AI assistant strictly answers university regulatory queries. Offtopic questions (recipes, chat, weather) are politely refused. Markdown is rendered cleanly with zero raw asterisks (`**`).
+11. **Post-Contest Decommissioning (TICKET-09)**: All cloud resources (VM, unattached 10 GB disk, public IP) must be terminated on 29.11.2026 at 12:00 MSK per `specs/TICKET-09-post-contest-decommissioning.md` to prevent card charges.
 
 ## MCP Server Routing & Whitelist
 - **Whitelisted MCP Servers**: `vps-ssh-dekanat` (host: `153.51.174.89`), `supabase-mcp-server`, `github-server-nek1y`
