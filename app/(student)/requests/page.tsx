@@ -441,21 +441,22 @@ export default function RequestsPage() {
                   </div>
 
                   {item.status === "ready" && (
-                    <div className="mt-3 p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                    <div className="mt-3 p-3.5 rounded-xl bg-card/75 backdrop-blur-xs border border-emerald-500/30 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-start gap-2.5">
-                        <FileCheck className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-                        <div className="text-xs leading-relaxed">
-                          Справка оформлена и заверена электронной подписью деканата. Вы можете открыть и скачать официальный электронный документ прямо сейчас либо забрать оригинал с мокрой печатью в кабинете 201.
+                        <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                          <FileCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <div className="text-xs text-foreground leading-relaxed">
+                          Справка оформлена и заверена электронной подписью деканата. Вы можете открыть и скачать официальный электронный документ прямо сейчас либо забрать оригинал с печатью в кабинете 201.
                         </div>
                       </div>
                       <Button
                         type="button"
                         size="sm"
-                        variant="default"
                         onClick={() => setCertificateModalId(item.id)}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-600 dark:hover:bg-emerald-700 text-xs font-semibold shrink-0 gap-1.5 h-9"
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shrink-0 gap-1.5 h-9 px-3.5 shadow-sm cursor-pointer"
                       >
-                        <FileCheck className="w-3.5 h-3.5" />
+                        <FileCheck className="w-3.5 h-3.5 text-white" />
                         Открыть и скачать справку (PDF)
                       </Button>
                     </div>

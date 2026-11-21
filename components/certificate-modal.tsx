@@ -92,9 +92,9 @@ export function CertificateModal({
         }
       }}
     >
-      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-background rounded-2xl border border-border shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-card text-card-foreground rounded-2xl border border-border shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-border flex items-center justify-between gap-3 bg-muted/40 shrink-0">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-border flex items-center justify-between gap-3 bg-muted/50 shrink-0">
           <div className="flex items-center gap-2.5 overflow-hidden">
             <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <FileText className="w-5 h-5" />
@@ -105,7 +105,7 @@ export function CertificateModal({
               </h2>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <ShieldCheck className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 shrink-0" />
-                <span className="text-[11px] font-medium text-sky-700 dark:text-sky-300">
+                <span className="text-[11px] font-semibold text-sky-700 dark:text-sky-300">
                   Заверено ЭЦП • ИГУ (Концепт)
                 </span>
               </div>
@@ -143,20 +143,20 @@ export function CertificateModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-4 py-3 sm:px-6 sm:py-3.5 border-t border-border bg-background flex flex-wrap items-center justify-between gap-2 shrink-0">
-          <div className="text-[11px] text-muted-foreground hidden sm:block">
+        <div className="px-4 py-3.5 sm:px-6 border-t border-border bg-card flex flex-wrap items-center justify-between gap-3 shrink-0">
+          <div className="text-[11px] text-muted-foreground font-medium hidden sm:block">
             A4 • Книжная ориентация • ГОСТ Р 7.0.97
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end flex-wrap">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={handleOpenNewTab}
-              className="text-xs gap-1.5 h-9"
+              className="bg-card hover:bg-muted text-foreground border-border text-xs gap-1.5 h-9 font-medium shadow-2xs"
             >
-              <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
               В новой вкладке
             </Button>
 
@@ -165,29 +165,28 @@ export function CertificateModal({
               variant="outline"
               size="sm"
               onClick={handlePrint}
-              className="text-xs gap-1.5 h-9"
+              className="bg-card hover:bg-muted text-foreground border-border text-xs gap-1.5 h-9 font-medium shadow-2xs"
             >
-              <Printer className="w-3.5 h-3.5" />
+              <Printer className="w-3.5 h-3.5 text-muted-foreground" />
               Печать
             </Button>
 
             <Button
               type="button"
-              variant="default"
               size="sm"
               onClick={handleDownload}
-              className="text-xs gap-1.5 h-9 font-semibold"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs gap-1.5 h-9 px-4 shadow-sm"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3.5 h-3.5 text-white" />
               Скачать PDF
             </Button>
 
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={onClose}
-              className="text-xs h-9 sm:hidden"
+              className="text-xs h-9 text-foreground border-border sm:hidden"
             >
               Закрыть
             </Button>
