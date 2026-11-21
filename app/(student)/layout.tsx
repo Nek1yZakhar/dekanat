@@ -1,4 +1,5 @@
 import React from "react";
+import { redirect } from "next/navigation";
 import { MobileNav } from "@/components/mobile-nav";
 import { RealtimeListener } from "@/components/realtime-listener";
 import { requireUserSession } from "@/app/proxy";
@@ -11,6 +12,9 @@ export default async function StudentLayout({
   children: React.ReactNode;
 }) {
   const session = await requireUserSession();
+  if (session.role === 'staff') {
+    redirect('/staff');
+  }
 
   return (
     <div className="flex-1 flex flex-col min-h-screen pb-20">

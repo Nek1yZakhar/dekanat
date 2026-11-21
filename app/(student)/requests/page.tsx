@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { CertificateModal } from "@/components/certificate-modal";
 
 interface RequestEvent {
   id?: string;
@@ -57,6 +58,7 @@ export default function RequestsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showNewForm, setShowNewForm] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [certificateModalId, setCertificateModalId] = useState<string | null>(null);
 
   // Form State
   const [docType, setDocType] = useState<"certificate" | "reference" | "application">("certificate");
@@ -439,9 +441,23 @@ export default function RequestsPage() {
                   </div>
 
                   {item.status === "ready" && (
-                    <div className="p-2.5 rounded-xl bg-green-500/10 border border-green-500/20 text-green-900 dark:text-green-200 text-xs flex items-center gap-2">
-                      <FileCheck className="w-4 h-4 shrink-0 text-green-600 dark:text-green-400" />
-                      <span>Документ готов к выдаче. Ждём вас в деканате (кабинет 201) с 10:00 до 17:00.</span>
+                    <div className="mt-3 p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                      <div className="flex items-start gap-2.5">
+                        <FileCheck className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                        <div className="text-xs leading-relaxed">
+                          Справка оформлена и заверена электронной подписью деканата. Вы можете открыть и скачать официальный электронный документ прямо сейчас либо забрать оригинал с мокрой печатью в кабинете 201.
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="default"
+                        onClick={() => setCertificateModalId(item.id)}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-600 dark:hover:bg-emerald-700 text-xs font-semibold shrink-0 gap-1.5 h-9"
+                      >
+                        <FileCheck className="w-3.5 h-3.5" />
+                        Открыть и скачать справку (PDF)
+                      </Button>
                     </div>
                   )}
                 </CardContent>
@@ -450,6 +466,12 @@ export default function RequestsPage() {
           );
         })}
       </div>
+
+      <CertificateModal
+        requestId={certificateModalId}
+        isOpen={Boolean(certificateModalId)}
+        onClose={() => setCertificateModalId(null)}
+      />
     </div>
   );
 }

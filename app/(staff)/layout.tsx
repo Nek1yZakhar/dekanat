@@ -1,13 +1,15 @@
 import React from "react";
 import Link from "next/link";
-import { Building2, LogOut, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Building2, LogOut } from "lucide-react";
+import { requireStaffSession } from "@/app/proxy";
 
-export default function StaffLayout({
+export default async function StaffLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await requireStaffSession();
+
   return (
     <div className="flex-1 flex flex-col min-h-screen pb-10">
       {/* Staff App Bar */}
@@ -19,19 +21,12 @@ export default function StaffLayout({
           <div>
             <div className="text-xs font-semibold leading-tight">Панель деканата</div>
             <div className="text-[10px] text-muted-foreground leading-tight">
-              Сотрудник: Соколова Е.П.
+              Соколова Елена Павловна • Деканат (Модератор)
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center justify-center h-8 text-[11px] px-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 mr-1" />
-            Студент
-          </Link>
           <Link
             href="/login"
             title="Выйти"

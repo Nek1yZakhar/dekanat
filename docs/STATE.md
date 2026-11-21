@@ -1,10 +1,10 @@
 # 📌 Состояние проекта (STATE.md)
 
 **Проект**: Цифровой деканат (Digital Deanery Concept — MGIMO × AI Challenge, трек Vibe-Coding)  
-- 🚀 **Оперативный статус платформы**: **ЭТАП 4: Спецификации TICKET-06 и TICKET-07 углублены и зафиксированы**. Прототип развернут в **Yandex Cloud (Москва)** с авто-SSL Let's Encrypt: **`https://153.51.174.89.sslip.io`**. База данных Supabase Cloud реактивирована, публикации сокетов `supabase_realtime` включены (`notifications`, `requests`, `request_events`), работает Dual-Mode симулятор платформы MAX (`/max-preview`).
-- 🎯 **Активный фокус**: **TICKET-06 (Генератор официальных PDF-справок с гербовой печатью и ролевая изоляция деканата)** и **TICKET-07 (Полный UI/UX-полишинг, подлинное расписание ИГУ, шторка ДЗ, MAX-оболочка и AI-гардрейлы)** — спецификации полностью детализированы для автономной реализации агентами.
+- 🚀 **Оперативный статус платформы**: **ЭТАП 5: TICKET-06 (генератор официальных PDF-справок, ролевая изоляция деканата и консоль модератора) успешно реализован, протестирован (22/22 Vitest) и задеплоен на боевой сервер**. Прототип развернут в **Yandex Cloud (Москва)** с авто-SSL Let's Encrypt: **`https://153.51.174.89.sslip.io`**. База данных Supabase Cloud активна, сокеты `supabase_realtime` включены, генерация PDF на `@react-pdf/renderer` работает с локальными шрифтами Noto Sans и защитой от IDOR.
+- 🎯 **Активный фокус**: **TICKET-07 (Полный UI/UX-полишинг, подлинное расписание ИГУ, шторка ДЗ, MAX-оболочка и AI-гардрейлы)** — переход к финальной полировке перед код-фризом.
 - 🕒 **Инвариант часовых поясов**: Разработчик Захар в Иркутске (IRKT, UTC+8). Сервер деплоя и дедлайн конкурса в Москве (MSK, UTC+3). Дельта: $+5$ часов ($\text{IRKT} = \text{MSK} + 5$). Дедлайн сдачи: **22.11.2026 23:59 MSK** (= 23.11.2026 04:59 IRKT). Окно активности прототипа для жюри: до 28.11.2026 включительно.
-- **Дата обновления**: 2026-11-22 (04:53 IRKT / 23:53 21.11 МСК)
+- **Дата обновления**: 2026-11-22 (05:55 IRKT / 00:55 22.11 МСК)
 
 ---
 
@@ -20,37 +20,42 @@
 | **Academic Analytics Layer** (`lib/academic.ts`) | ✅ SSoT Verified v1.0 | Чистые функции расчета прогресса диплома, суммирования зачетных единиц (ЗЕТ), среднего балла (GPA) и выявления факторов академического риска (`LOW`, `MEDIUM`, `CRITICAL`). **6/6 тестов Vitest PASSED**. |
 | **Database & Security Layer** (`supabase/migrations/`) | ✅ Postgres 17 & RLS DDL | 10 таблиц, расширение `vector`, строгий RLS: студент изолирован на уровне `auth.uid()`, сотрудник деканата авторизован на модерацию очереди. Статус кластера: `ACTIVE_HEALTHY`. |
 | **Seed & Synthetic Data Layer** (`seeds/seed.ts`) | ✅ 100% Fictional Data | Полностью синтетический контур (требование комплаенса): 3 тестовых профиля в Supabase Auth (`student1`, `student2`, `staff`), учебное расписание, зачетка с БРС и 40 статей вымышленных регламентов. |
-| **Validation & Quality Gates** | 🛡️ Quality Gates PASSED | `pnpm typecheck` (0 ошибок), `pnpm lint` (0 предупреждений), `pnpm test` (6/6 тестов успешно), `pnpm build` (успешная standalone-сборка 14 страниц). |
+| **PDF & Certificate Layer** (`lib/pdf/`, `app/api/requests/[id]/certificate`) | 🟢 **100% PDF & IDOR Guard LIVE** | Генератор официальных справок об обучении A4 на `@react-pdf/renderer` v4.9.0 с локальными шрифтами Noto Sans (`public/fonts/`), синей гербовой печатью, штампом ЭЦП и вымышленными реквизитами. Защита от IDOR (401/403/200), модальное окно предпросмотра с печатью и скачиванием. 16/16 тестов в `tests/certificate.test.ts`. |
+| **Staff Role Guard & Console** (`app/(staff)/`, `app/(student)/layout.tsx`) | 🟢 **100% Role Isolated** | Физическая изоляция сотрудника деканата (`role === 'staff'`) от студенческих разделов: автоматический серверный редирект на `/staff`, ликвидация студенческой нижней навигации, персоналия модератора в шапке, высококонтрастные табы фильтрации очереди и кнопка предпросмотра бланка справки. |
+| **Validation & Quality Gates** | 🛡️ Quality Gates PASSED | `pnpm typecheck` (0 ошибок), `pnpm lint` (0 предупреждений), `pnpm test` (22/22 тестов успешно: 6 academic + 16 certificate), `pnpm build` (успешная standalone-сборка 14 страниц). |
 
 ---
 
 ## 2. 📜 Решённые задачи (Ротация в CHANGELOG.md — последние 3)
 
-1. ⚡ **`TICKET-02: Облачная инфраструктура и суверенный деплой на Yandex Cloud` (22.11.2026)**:
-   - Развернута ВМ Yandex Cloud (Москва, 2 vCPU, 2 ГБ RAM, 1,5 ГБ swap), запущен Caddy 2 с автоматическим Let's Encrypt TLS: `https://153.51.174.89.sslip.io`. Реактивирован кластер Supabase Cloud (`ACTIVE_HEALTHY`), настроен системный Keep-Alive crontab.
-2. ⚡ **`TICKET-03: Realtime-уведомления и живое обновление очереди` (22.11.2026)**:
+1. ⚡ **`TICKET-03: Realtime-уведомления и живое обновление очереди` (22.11.2026)**:
    - Включена публикация `supabase_realtime` для `notifications`, `requests`, `request_events` с `REPLICA IDENTITY FULL`.
    - Интегрирована `sonner` v2.0.8, настроены клиентские сокет-подписки студента и сотрудника деканата: живое обновление таймлайна, тосты Sonner, пульсирующая подсветка новых заявок.
-3. ⚡ **`TICKET-04: Оболочка MAX Mini App (Госуслуги / MAX) Dual-Mode` (22.11.2026)**:
+2. ⚡ **`TICKET-04: Оболочка MAX Mini App (Госуслуги / MAX) Dual-Mode` (22.11.2026)**:
    - Создан типизированный мост `lib/max-bridge.ts` (`ready`, `expand`, `onBackButtonPressed`, safe-area insets).
    - Развернут интерактивный симулятор `/max-preview` с 3D-фреймом смартфона, системным статус-баром, шапкой MAX с верификацией и панелью жюри. Подготовлен манифест `docs/max-bot-manifest.json` для `dev.max.ru`.
+3. ⚡ **`TICKET-06: Генератор официальных PDF-справок, ролевая изоляция и панель деканата` (22.11.2026)**:
+   - Внедрен генератор справок об обучении на `@react-pdf/renderer` v4.9.0 с локальными шрифтами Noto Sans, гербовой печатью, ЭЦП и конкурсным дисклеймером.
+   - Реализована строгая серверная ролевая изоляция сотрудника (`role === 'staff'`) от студенческих роутов, очищена панель `/staff`.
+   - Развернут защищенный эндпоинт `/api/requests/[id]/certificate` с IDOR-защитой (401/403/200), создано модальное окно предпросмотра/скачивания `CertificateModal`. 22/22 тестов Vitest успешно пройдены.
 
 ---
 
-## 3. 🎯 Активный тикет: TICKET-06 — Генератор PDF-справок, ролевая изоляция и панель деканата
+## 3. 🎯 Активный тикет: TICKET-07 — Финальная полировка UI/UX, десктопная адаптивность и PWA
 
-- **Идентификатор**: `TICKET-06`
-- **Название**: Генератор официальных PDF-справок, ролевая изоляция и панель деканата (Certificates, Role Guard & Staff Console Polish)
+- **Идентификатор**: `TICKET-07`
+- **Название**: Финальная полировка UX, десктопная адаптивность, устранение дефектов и PWA (UX, Accessibility & PWA Polish)
 - **Статус**: 🟡 **ACTIVE** (В работе)
 - **Плановый дедлайн**: 22.11.2026
 - **Приоритет**: P1 (Высокий)
-- **Спецификация**: [`specs/TICKET-06-certificates-and-staff-polish.md`](../specs/TICKET-06-certificates-and-staff-polish.md)
+- **Спецификация**: [`specs/TICKET-07-ux-pwa-final-polish.md`](../specs/TICKET-07-ux-pwa-final-polish.md)
 
 ### Чек-лист реализации (Scope)
-- [ ] 1. **Строгая ролевая изоляция сотрудника деканата**: автоматический редирект с `/dashboard`, `/grades`, `/schedule` на `/staff`, ликвидация студенческих данных у профиля сотрудника.
-- [ ] 2. **Шаблонизатор официальной справки на `@react-pdf/renderer`**: вымышленный бланк, гербовый штамп концепта, регистрация локального шрифта Noto Sans (Zero-Mojibake).
-- [ ] 3. **Эндпоинт `/api/requests/[id]/certificate` & скачивание**: защита от IDOR (`student_id = auth.uid()` или `role = 'staff'`), кнопка «Скачать справку (PDF)» в карточке готовой заявки.
-- [ ] 4. **Полировка панели модератора `/staff`**: визуальная подсветка активной вкладки фильтра очереди, модальное окно генерации справки и аудит-лог смены статусов.
+- [ ] 1. **Ликвидация паразитных скроллбаров**: Single-Scrollbar на десктопных разрешениях 1366–1920px, скрытие полос у горизонтальных фильтров (`scrollbar-none`).
+- [ ] 2. **Контрастность бейджей (WCAG AA >= 4.5:1)**: исключение бледного текста на пастельных фонах.
+- [ ] 3. **Тотальный Zero-Emoji**: замена всех юникод-эмодзи на строгие векторные SVG (`lucide-react`).
+- [ ] 4. **AI-гардрейлы и академический отказ**: четкий отказ на кулинарные рецепты и посторонние темы с вежливым перенаправлением на регламенты вуза.
+- [ ] 5. **Шторка домашних заданий и расписание ИГУ**: детальная информация о заданиях и занятиях в модальных шторках.
 
 ---
 
@@ -61,8 +66,8 @@ graph TD
     T01["TICKET-01: Core Scaffolding [DONE]"] --> T02["TICKET-02: Yandex Cloud Deploy & Caddy SSL [DONE]"]
     T02 --> T03["TICKET-03: Realtime Notifications & Queue [DONE]"]
     T03 --> T04["TICKET-04: MAX Mini App Dual-Mode [DONE]"]
-    T04 --> T06["TICKET-06: PDF Certificates & Staff Panel Polish [ACTIVE]"]
-    T06 --> T07["TICKET-07: UX, Accessibility & PWA Polish [Code Freeze]"]
+    T04 --> T06["TICKET-06: PDF Certificates & Staff Panel Polish [DONE]"]
+    T06 --> T07["TICKET-07: UX, Accessibility & PWA Polish [ACTIVE]"]
     T07 --> T08["TICKET-08: Submission Package, PROCESS.md & Video Demo"]
     T08 --> T09["TICKET-09: Post-Contest Decommissioning (29.11.2026)"]
 
@@ -70,8 +75,8 @@ graph TD
     style T02 fill:#22c55e,stroke:#16a34a,color:#fff
     style T03 fill:#22c55e,stroke:#16a34a,color:#fff
     style T04 fill:#22c55e,stroke:#16a34a,color:#fff
-    style T06 fill:#eab308,stroke:#ca8a04,color:#000
-    style T07 fill:#64748b,stroke:#475569,color:#fff
+    style T06 fill:#22c55e,stroke:#16a34a,color:#fff
+    style T07 fill:#eab308,stroke:#ca8a04,color:#000
     style T08 fill:#ef4444,stroke:#dc2626,color:#fff
     style T09 fill:#94a3b8,stroke:#64748b,color:#000
 ```
@@ -85,7 +90,7 @@ graph TD
 | **TICKET-03** | Realtime-уведомления и обновление очереди | 🟢 **DONE** | P1 (Высокий) | [TICKET-03](archive/TICKET-03-realtime-notifications.md) |
 | **TICKET-04** | Оболочка MAX Mini App (Госуслуги / MAX) Dual-Mode | 🟢 **DONE** | P1 (Высокий) | [TICKET-04](archive/TICKET-04-max-mini-app.md) |
 | **TICKET-05** | Оболочка Telegram Mini App | ⚪ **SKIPPED** | P2 (Отложен) | [TICKET-05](TICKET-05-telegram-mini-app.md) |
-| **TICKET-06** | Генератор PDF-справок и панель деканата | 🟡 **ACTIVE** | P1 (Высокий) | [TICKET-06](TICKET-06-certificates-and-staff-polish.md) |
-| **TICKET-07** | Финальная полировка UX, доступность и PWA | ⚪ **OPEN** | P1 (Высокий) | [TICKET-07](TICKET-07-ux-pwa-final-polish.md) |
+| **TICKET-06** | Генератор PDF-справок и панель деканата | 🟢 **DONE** | P1 (Высокий) | [TICKET-06](TICKET-06-certificates-and-staff-polish.md) |
+| **TICKET-07** | Финальная полировка UX, доступность и PWA | 🟡 **ACTIVE** | P1 (Высокий) | [TICKET-07](TICKET-07-ux-pwa-final-polish.md) |
 | **TICKET-08** | Конкурсный пакет, отчет PROCESS.md и видео | ⚪ **OPEN** | P0 (Критичный) | [TICKET-08](TICKET-08-submission-package.md) |
 | **TICKET-09** | Вывод инфраструктуры из эксплуатации и защита от списаний | ⚪ **OPEN (Scheduled: 29.11.2026)** | P1 (Безопасность) | [TICKET-09](../specs/TICKET-09-post-contest-decommissioning.md) |

@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { CertificateModal } from "@/components/certificate-modal";
 
 interface StaffRequest {
   id: string;
@@ -46,6 +47,7 @@ export default function StaffPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [previewRequestId, setPreviewRequestId] = useState<string | null>(null);
 
   const supabase = createClient();
 
@@ -225,7 +227,7 @@ export default function StaffPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1">
+      <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
         {[
           { key: "all", label: "Все заявки" },
           { key: "submitted", label: "Новые" },
@@ -238,7 +240,7 @@ export default function StaffPage() {
             className={cn(
               "px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all border",
               statusFilter === tab.key
-                ? "bg-primary text-primary-foreground border-primary"
+                ? "bg-primary text-primary-foreground border-primary font-semibold shadow-sm"
                 : "bg-background text-muted-foreground border-border hover:bg-muted"
             )}
           >
@@ -311,15 +313,26 @@ export default function StaffPage() {
                     )}
 
                     {req.status === "in_review" && (
-                      <Button
-                        size="sm"
-                        variant="default"
-                        onClick={() => handleUpdateStatus(req.id, "ready")}
-                        className="text-xs h-8 gap-1 flex-1 bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Готово к выдаче</span>
-                      </Button>
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setPreviewRequestId(req.id)}
+                          className="text-xs h-8 gap-1 border-primary/40 hover:bg-primary/10 text-primary font-medium"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>Бланк справки (PDF)</span>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() => handleUpdateStatus(req.id, "ready")}
+                          className="text-xs h-8 gap-1 flex-1 bg-green-600 hover:bg-green-700 text-white font-medium"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Готово к выдаче</span>
+                        </Button>
+                      </>
                     )}
 
                     {req.status !== "rejected" && req.status !== "ready" && (
@@ -335,9 +348,20 @@ export default function StaffPage() {
                     )}
 
                     {req.status === "ready" && (
-                      <div className="text-[11px] text-green-700 dark:text-green-400 font-medium flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Документ подписан и ожидает студента</span>
+                      <div className="flex items-center justify-between w-full gap-2 flex-wrap">
+                        <div className="text-[11px] text-green-700 dark:text-green-400 font-medium flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Документ подписан и ожидает студента</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setPreviewRequestId(req.id)}
+                          className="text-xs h-8 gap-1 border-green-600/30 text-green-700 dark:text-green-300 hover:bg-green-500/10 font-medium"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>Открыть справку (PDF)</span>
+                        </Button>
                       </div>
                     )}
 
@@ -354,6 +378,12 @@ export default function StaffPage() {
           })
         )}
       </div>
+
+      <CertificateModal
+        requestId={previewRequestId}
+        isOpen={Boolean(previewRequestId)}
+        onClose={() => setPreviewRequestId(null)}
+      />
     </div>
   );
 }
