@@ -65,28 +65,28 @@ export default function MaxPreviewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center py-6 px-3 sm:px-6">
+    <div className="w-full flex flex-col items-center py-4 sm:py-6 text-foreground">
       {/* Top Bar for Contest Evaluators */}
-      <header className="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-slate-800/80 mb-6">
+      <header className="w-full max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-border mb-6">
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/60 text-slate-200 text-xs font-semibold transition-all shadow-sm active:scale-95"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-card hover:bg-muted border border-border text-foreground text-xs font-semibold transition-all shadow-sm active:scale-95"
             title="Вернуться в основной интерфейс цифрового деканата"
           >
-            <ArrowLeft className="w-4 h-4 text-blue-400" />
+            <ArrowLeft className="w-4 h-4 text-primary" />
             <span>Выйти в деканат</span>
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+              <h1 className="text-base sm:text-lg font-bold tracking-tight text-foreground flex items-center gap-2">
                 <span>Интерактивный симулятор MAX Mini App</span>
-                <Badge variant="outline" className="border-blue-500/40 text-blue-400 bg-blue-500/10 text-[10px]">
+                <Badge variant="outline" className="border-primary/40 text-primary bg-primary/10 text-[10px]">
                   Оболочка супер-аппа
                 </Badge>
               </h1>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Национальная платформа MAX (Госуслуги / супер-апп). Проверка мини-приложения в 1 клик.
             </p>
           </div>
@@ -98,9 +98,9 @@ export default function MaxPreviewPage() {
             size="sm"
             variant="outline"
             onClick={handleCopyLink}
-            className="h-8 text-xs gap-1.5 border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200"
+            className="h-8 text-xs gap-1.5 border-border bg-card hover:bg-muted text-foreground"
           >
-            {copiedLink ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
             <span>Ссылка для MAX</span>
           </Button>
 
@@ -108,7 +108,7 @@ export default function MaxPreviewPage() {
             size="sm"
             variant="outline"
             onClick={handleReloadFrame}
-            className="h-8 text-xs gap-1.5 border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200"
+            className="h-8 text-xs gap-1.5 border-border bg-card hover:bg-muted text-foreground"
             title="Перезагрузить контейнер мини-приложения"
           >
             <RotateCw className="w-3.5 h-3.5" />
@@ -119,7 +119,7 @@ export default function MaxPreviewPage() {
             href="/dashboard?platform=max"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white transition-colors"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-medium bg-primary hover:bg-primary/90 text-primary-foreground transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             <span>На весь экран</span>
@@ -128,11 +128,11 @@ export default function MaxPreviewPage() {
       </header>
 
       {/* Main Sandbox Area */}
-      <div className="w-full max-w-4xl flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8">
+      <div className="w-full max-w-5xl flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 mx-auto">
         {/* Authentic Smartphone Chassis */}
         <div
-          className="relative flex flex-col shrink-0 bg-black rounded-[52px] p-3.5 shadow-2xl ring-1 ring-slate-800 border-4 border-slate-700/50 transition-all duration-300"
-          style={{ width: `${deviceWidth}px`, height: "820px" }}
+          className="relative flex flex-col shrink-0 bg-black rounded-[52px] p-3.5 shadow-2xl ring-1 ring-slate-800 border-4 border-slate-700/50 transition-all duration-300 mx-auto lg:mx-0"
+          style={{ width: "100%", maxWidth: `${deviceWidth}px`, height: "820px" }}
         >
           {/* Hardware Screen Bezel */}
           <div className="relative w-full h-full bg-slate-900 rounded-[40px] overflow-hidden flex flex-col border border-slate-800">
@@ -214,7 +214,7 @@ export default function MaxPreviewPage() {
         </div>
 
         {/* Sidebar Controls & Evaluation Notes for Contest Jury */}
-        <div className="flex-1 w-full max-w-md space-y-4">
+        <div className="w-full lg:w-80 xl:w-96 space-y-4 shrink-0 mx-auto lg:mx-0">
           {/* Quick Screen Switcher */}
           <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
             <div className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">

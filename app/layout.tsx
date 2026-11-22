@@ -46,7 +46,7 @@ export default function RootLayout({
         <MAXBridgeInitializer />
         <Toaster richColors position="top-center" closeButton />
         <DisclaimerBanner />
-        <main className="flex-1 flex flex-col w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-3 sm:px-4 transition-all">
+        <main className="flex-1 flex flex-col w-full max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto px-3 sm:px-4 transition-all">
           {children}
         </main>
       </body>
