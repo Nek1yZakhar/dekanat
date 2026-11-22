@@ -13,9 +13,13 @@
 | **TICKET-03** | Realtime-уведомления и обновление очереди | 🟢 **DONE** | 22.11.2026 | P1 (Высокий) | [TICKET-03](archive/TICKET-03-realtime-notifications.md) |
 | **TICKET-04** | Оболочка MAX Mini App (Госуслуги / MAX) Dual-Mode | 🟢 **DONE** | 22.11.2026 | P1 (Высокий) | [TICKET-04](archive/TICKET-04-max-mini-app.md) |
 | **TICKET-05** | Оболочка Telegram Mini App | ⚪ **SKIPPED (Deferred)** | — | P2 (Отложен) | [TICKET-05](TICKET-05-telegram-mini-app.md) |
-| **TICKET-06** | Генератор PDF-справок, ролевая изоляция и панель деканата | 🟡 **ACTIVE** | 22.11.2026 | P1 (Высокий) | [TICKET-06](TICKET-06-certificates-and-staff-polish.md) |
-| **TICKET-07** | Финальная полировка UI/UX, десктопная адаптивность, устранение дефектов и PWA | ⚪ **OPEN** | 22.11.2026 | P1 (Высокий) | [TICKET-07](TICKET-07-ux-pwa-final-polish.md) |
-| **TICKET-08** | Конкурсный пакет, отчет PROCESS.md и видео | ⚪ **OPEN** | 22.11.2026 | P0 (Критичный) | [TICKET-08](TICKET-08-submission-package.md) |
+| **TICKET-06** | Генератор PDF-справок, ролевая изоляция и панель деканата | 🟢 **DONE** | 22.11.2026 | P1 (Высокий) | [TICKET-06](TICKET-06-certificates-and-staff-polish.md) |
+| **TICKET-07** | Финальная полировка UI/UX, десктопная адаптивность, расписание ИГУ и PWA | 🟢 **DONE** | 22.11.2026 | P1 (Высокий) | [TICKET-07](TICKET-07-ux-pwa-final-polish.md) |
+| **TICKET-07.5**| Визуальная полировка UI, консистентность данных факультетов и MAX | 🟢 **DONE** | 22.11.2026 | P1 (Высокий) | [TICKET-07.5](TICKET-07.5-visual-polish-data-consistency.md) |
+| **TICKET-07.7**| Изоляция студентов, SSoT зачетки и расписания, живой AI и автосброс демо | 🟢 **DONE** | 23.11.2026 | P1 (Высокий) | [TICKET-07.7](TICKET-07.7-student-isolation-live-ai.md) |
+| **TICKET-07.8**| Комплексная адаптивность UI, фикс /grades, SSoT главной и дизайн-система | 🟢 **DONE** | 23.11.2026 | P1 (Высокий) | [TICKET-07.8](TICKET-07.8-responsive-ui-grades-fix-design-system.md) |
+| **TICKET-07.9**| Редизайн карточек расписания/оценок, микро-анимации и SVG-фавикон | 🟢 **DONE** | 23.11.2026 | P1 (Высокий) | [TICKET-07.9](TICKET-07.9-card-redesign-animations-favicon.md) |
+| **TICKET-08** | Конкурсный пакет, отчет PROCESS.md и видео | 🟡 **ACTIVE** | 23.11.2026 | P0 (Критичный) | [TICKET-08](TICKET-08-submission-package.md) |
 | **TICKET-09** | Вывод инфраструктуры из эксплуатации и защита от списаний | ⚪ **OPEN (Scheduled)** | 29.11.2026 | P1 (Безопасность) | [TICKET-09](TICKET-09-post-contest-decommissioning.md) |
 
 > **Архитектурное решение по мобильным интеграциям (22.11.2026)**:
