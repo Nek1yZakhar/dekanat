@@ -21,7 +21,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: latest
+          version: 11
           run_install: false
 
       - name: Get pnpm store directory
@@ -50,7 +50,7 @@ jobs:
     name: "🚀 Deploy to Yandex Cloud (153.51.174.89)"
     needs: validate
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && secrets.VPS_SSH_KEY != ''
     steps:
       - name: Execute remote deployment over SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -66,7 +66,7 @@ jobs:
             git pull origin main || true
 
             echo "=== 2. Rebuilding and restarting containers ==="
-            docker compose up -d --build
+            docker compose up -d --build dekanat
 
             echo "=== 3. Waiting for healthcheck ==="
             sleep 5
