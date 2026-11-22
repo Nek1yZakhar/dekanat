@@ -28,7 +28,7 @@ export interface ExtendedGradeRecord extends GradeRecord {
   room?: string;
 }
 
-const INITIAL_GRADES: ExtendedGradeRecord[] = [
+export const INITIAL_GRADES: ExtendedGradeRecord[] = [
   // 2 семестр (3 оценки "5", 1 зачёт)
   {
     id: "g1",
@@ -113,9 +113,9 @@ const INITIAL_GRADES: ExtendedGradeRecord[] = [
     grade: "зачёт",
     points: 88,
     zet: 2,
-    teacher: "проф. Зуляр Ю.А.",
+    teacher: "доц. Шмидт С.Ф.",
     kind: "lecture",
-    room: "ауд. 329",
+    room: "ауд. 307",
   },
   {
     id: "g8",

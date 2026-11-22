@@ -349,15 +349,14 @@ export default function StaffPage() {
 
                     {req.status === "ready" && (
                       <div className="flex items-center justify-between w-full gap-2 flex-wrap">
-                        <div className="text-[11px] text-green-700 dark:text-green-400 font-medium flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
+                        <div className="text-[11px] text-emerald-800 font-semibold flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                           <span>Документ подписан и ожидает студента</span>
                         </div>
                         <Button
                           size="sm"
-                          variant="outline"
                           onClick={() => setPreviewRequestId(req.id)}
-                          className="text-xs h-8 gap-1 border-green-600/30 text-green-700 dark:text-green-300 hover:bg-green-500/10 font-medium"
+                          className="text-xs h-8 gap-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs"
                         >
                           <FileText className="w-3.5 h-3.5" />
                           <span>Открыть справку (PDF)</span>

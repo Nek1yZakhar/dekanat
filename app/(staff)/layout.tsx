@@ -13,7 +13,7 @@ export default async function StaffLayout({
   return (
     <div className="flex-1 flex flex-col min-h-screen pb-10">
       {/* Staff App Bar */}
-      <header className="sticky top-6 z-30 w-full bg-background/90 backdrop-blur-md border-b border-border px-4 py-2.5 flex items-center justify-between">
+      <header className="sticky top-0 z-30 w-full bg-background border-b border-border shadow-xs px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0">
             <Building2 className="w-4 h-4" />

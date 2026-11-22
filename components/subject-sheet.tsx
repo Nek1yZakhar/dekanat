@@ -75,8 +75,8 @@ export function SubjectSheet({ lesson, isOpen, onClose }: SubjectSheetProps) {
       <div
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative w-full max-w-lg bg-card text-card-foreground shadow-2xl border border-border",
-          "rounded-t-3xl md:rounded-2xl max-h-[88vh] flex flex-col overflow-hidden",
+          "relative w-full max-w-lg bg-white text-card-foreground shadow-2xl border border-slate-200",
+          "rounded-t-3xl md:rounded-3xl max-h-[88vh] flex flex-col overflow-hidden",
           "animate-in slide-in-from-bottom duration-200"
         )}
       >
@@ -86,7 +86,7 @@ export function SubjectSheet({ lesson, isOpen, onClose }: SubjectSheetProps) {
         </div>
 
         {/* Sheet Header */}
-        <div className="p-4 sm:p-5 border-b border-border flex items-start justify-between gap-3 bg-muted/20">
+        <div className="p-4 sm:p-5 border-b border-slate-200 flex items-start justify-between gap-3 bg-slate-50">
           <div className="space-y-1.5 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               {getKindBadge(lesson.kind)}
@@ -138,8 +138,8 @@ export function SubjectSheet({ lesson, isOpen, onClose }: SubjectSheetProps) {
         <div className="p-4 sm:p-5 space-y-4 overflow-y-auto flex-1 text-xs">
           {/* Change Alert if Present */}
           {lesson.change && (
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-950 dark:text-amber-200 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div className="space-y-0.5">
                 <div className="font-semibold text-xs">Особый регламент проведения:</div>
                 <div className="text-[11px] leading-relaxed">
@@ -150,14 +150,14 @@ export function SubjectSheet({ lesson, isOpen, onClose }: SubjectSheetProps) {
           )}
 
           {/* Current Homework (ДЗ) Card */}
-          <div className="p-3.5 rounded-2xl border border-primary/20 bg-primary/5 space-y-2.5">
+          <div className="p-3.5 rounded-xl border border-slate-200/90 bg-slate-50 space-y-2.5">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 font-semibold text-primary text-xs">
                 <BookOpen className="w-4 h-4" />
                 <span>Текущее домашнее задание (ДЗ)</span>
               </div>
               {lesson.homework?.deadline && (
-                <Badge variant="outline" className="text-[10px] bg-background font-medium">
+                <Badge variant="outline" className="text-[10px] bg-white border-slate-200 font-medium">
                   {lesson.homework.deadline}
                 </Badge>
               )}
@@ -168,7 +168,7 @@ export function SubjectSheet({ lesson, isOpen, onClose }: SubjectSheetProps) {
             </p>
 
             {lesson.homework?.literature && (
-              <div className="text-[11px] text-muted-foreground border-t border-primary/10 pt-2 flex items-start gap-1.5">
+              <div className="text-[11px] text-muted-foreground border-t border-slate-200/80 pt-2 flex items-start gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
                 <span><strong>Литература:</strong> {lesson.homework.literature}</span>
               </div>
@@ -176,7 +176,7 @@ export function SubjectSheet({ lesson, isOpen, onClose }: SubjectSheetProps) {
           </div>
 
           {/* Teacher Information Card */}
-          <div className="p-3.5 rounded-2xl border border-border bg-muted/30 space-y-2">
+          <div className="p-3.5 rounded-xl border border-slate-200/90 bg-slate-50 space-y-2">
             <div className="flex items-center gap-1.5 font-semibold text-foreground text-xs">
               <User className="w-4 h-4 text-primary" />
               <span>Преподаватель и кафедра</span>
@@ -211,7 +211,7 @@ export function SubjectSheet({ lesson, isOpen, onClose }: SubjectSheetProps) {
           </div>
 
           {/* BRS & Session Admission Card */}
-          <div className="p-3.5 rounded-2xl border border-border bg-card space-y-2.5">
+          <div className="p-3.5 rounded-xl border border-slate-200/90 bg-slate-50 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 font-semibold text-foreground text-xs">
                 <Award className="w-4 h-4 text-primary" />
@@ -246,7 +246,7 @@ export function SubjectSheet({ lesson, isOpen, onClose }: SubjectSheetProps) {
         </div>
 
         {/* Sheet Footer */}
-        <div className="p-3 sm:p-4 border-t border-border bg-muted/10 flex justify-end">
+        <div className="p-3 sm:p-4 border-t border-slate-200 bg-white flex justify-end">
           <Button
             type="button"
             variant="outline"

@@ -92,9 +92,9 @@ export function CertificateModal({
         }
       }}
     >
-      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-card text-card-foreground rounded-2xl border border-border shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-white text-card-foreground rounded-2xl border border-slate-200 shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-border flex items-center justify-between gap-3 bg-muted/50 shrink-0">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-200 flex items-center justify-between gap-3 bg-white shrink-0">
           <div className="flex items-center gap-2.5 overflow-hidden">
             <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <FileText className="w-5 h-5" />
@@ -104,8 +104,8 @@ export function CertificateModal({
                 {title}
               </h2>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 shrink-0" />
-                <span className="text-[11px] font-semibold text-sky-700 dark:text-sky-300">
+                <ShieldCheck className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <span className="text-[11px] font-semibold text-sky-700">
                   Заверено ЭЦП • ИГУ (Концепт)
                 </span>
               </div>
@@ -143,7 +143,7 @@ export function CertificateModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-4 py-3.5 sm:px-6 border-t border-border bg-card flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="px-4 py-3.5 sm:px-6 border-t border-slate-200 bg-white flex flex-wrap items-center justify-between gap-3 shrink-0">
           <div className="text-[11px] text-muted-foreground font-medium hidden sm:block">
             A4 • Книжная ориентация • ГОСТ Р 7.0.97
           </div>

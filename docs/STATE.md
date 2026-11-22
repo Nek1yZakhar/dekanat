@@ -2,9 +2,9 @@
 
 **Проект**: Цифровой деканат (Digital Deanery Concept — MGIMO × AI Challenge, трек Vibe-Coding)  
 - 🚀 **Оперативный статус платформы**: **ЭТАП 6: TICKET-07 (полный UI/UX-полишинг, подлинное расписание ИГУ из Excel, интерактивная шторка дисциплины и ДЗ, WCAG AA доступность, Zero-Emoji, Single-Scrollbar, нативный PWA-манифест и академические AI-гардрейлы) успешно реализован, протестирован (22/22 Vitest, standalone-сборка 15 страниц) и готов к деплою на боевой сервер**. Прототип развернут в **Yandex Cloud (Москва)** с авто-SSL Let's Encrypt: **`https://153.51.174.89.sslip.io`**.
-- 🎯 **Активный фокус**: **TICKET-08 (Конкурсный пакет сдачи, отчет PROCESS.md, README и видео-демонстрация)** — финализация материалов для сдачи жюри конкурса.
+- 🎯 **Активный фокус**: **TICKET-07.5 [DONE] (Визуальная полировка UI, консистентность данных факультетов, плотные модалки, SVG MAX и тултип успешно реализованы, 26/26 тестов Vitest)** ➔ переход к **TICKET-07.6 (Протокол внешнего аудита через GLM 5.3 Flash)** и TICKET-08.
 - 🕒 **Инвариант часовых поясов**: Разработчик Захар в Иркутске (IRKT, UTC+8). Сервер деплоя и дедлайн конкурса в Москве (MSK, UTC+3). Дельта: $+5$ часов ($\text{IRKT} = \text{MSK} + 5$). Дедлайн сдачи: **22.11.2026 23:59 MSK** (= 23.11.2026 04:59 IRKT). Окно активности прототипа для жюри: до 28.11.2026 включительно.
-- **Дата обновления**: 2026-11-22 (07:00 IRKT / 02:00 22.11 МСК)
+- **Дата обновления**: 2026-11-22 (18:25 IRKT / 13:25 22.11 МСК)
 
 ---
 
@@ -45,20 +45,22 @@
 
 ---
 
-## 3. 🎯 Активный тикет: TICKET-08 — Конкурсный пакет сдачи, отчет PROCESS.md и видео-демо
+## 3. 🎯 Активный тикет: TICKET-07.5 — Визуальная полировка UI, консистентность данных и MAX
 
-- **Идентификатор**: `TICKET-08`
-- **Название**: Конкурсный пакет сдачи, аналитический отчет PROCESS.md, финальный README и сценарий видео-демонстрации (Submission Package & Documentation)
-- **Статус**: 🟡 **ACTIVE** (В работе)
+- **Идентификатор**: `TICKET-07.5`
+- **Название**: Визуальная полировка UI, устранение рассогласования факультетов, ликвидация полупрозрачных и темных артефактов, палитра WCAG AA, векторный логотип MAX и кастомный тултип
+- **Статус**: 🟢 **DONE (Реализован и протестирован: 26/26 тестов, standalone-сборка)**
 - **Плановый дедлайн**: 22.11.2026 23:59 MSK
-- **Приоритет**: P0 (Критичный)
-- **Спецификация**: [`specs/TICKET-08-submission-package.md`](../specs/TICKET-08-submission-package.md)
+- **Приоритет**: P0 (Критичный визуальный)
+- **Спецификация**: [`specs/TICKET-07.5-visual-polish-data-consistency.md`](../specs/TICKET-07.5-visual-polish-data-consistency.md)
+- **Связанный тикет аудита**: [`specs/TICKET-07.6-external-review-glm.md`](../specs/TICKET-07.6-external-review-glm.md) (Протокол внешнего аудита через GLM 5.3 Flash)
 
 ### Чек-лист реализации (Scope)
-- [ ] 1. **Аналитический отчет PROCESS.md**: фиксация архитектурных развилок, метрик проекта, эволюции от идеи до продакшена.
-- [ ] 2. **Финальный представительский README.md**: структурированный паспорт проекта для жюри с ссылками на боевой демо-стенд, тестовыми аккаунтами и инструкцией проверки.
-- [ ] 3. **Сценарий видео-демонстрации**: 3-минутный регламентный хронометраж показа ключевых сценариев (студент, справки, MAX, AI, деканат).
-- [ ] 4. **Инструкция консервации и вывода из эксплуатации (TICKET-09)**: регламент отключения серверов 29.11.2026.
+- [x] 1. **Изоляция и SSoT факультетов**: профиль Смирнова (ЦД-23-1) по умолчанию открывает ИТ-расписание; смена таба на 07131-ДБ динамически меняет шапку на Международные отношения; очистка зачетки от преподавателей чужих кафедр (доц. Шмидт С.Ф.).
+- [x] 2. **Ликвидация паразитных dark-стилей и темных артефактов**: архитектурный фикс `@custom-variant dark (&:where(.dark, .dark *))` в `globals.css`, благородный изумрудный цвет для бейджа «5 (Отлично)» (`emerald-50/800`), замена темно-коричневого баннера на стильный нави/slate-900 дисклеймер.
+- [x] 3. **Непрозрачные плотные подложки (Solid Surfaces)**: шторка ДЗ (`SubjectSheet`) и модалка справки (`CertificateModal`) без полупрозрачного «грязного стекла» и просвечивания текста, концентрические радиусы скругления ($R_{\text{inner}} = 12\text{ px}$, $R_{\text{outer}} = 24\text{ px}$).
+- [x] 4. **Кнопки и статусы очереди деканата**: высококонтрастный текст статуса на `/staff` (`text-emerald-800`) и сочная зеленая залитая кнопка «Открыть справку (PDF)» (`bg-emerald-600 text-white`).
+- [x] 5. **Интеграция MAX**: аутентичный векторный SVG-логотип MAX, десктопный CSS-тултип (`hidden sm:block`) и фиксация шапки панели деканата от наезда скролла в `/max-preview` (универсальный `sticky top-0 bg-background`).
 
 ---
 
@@ -71,7 +73,9 @@ graph TD
     T03 --> T04["TICKET-04: MAX Mini App Dual-Mode [DONE]"]
     T04 --> T06["TICKET-06: PDF Certificates & Staff Panel Polish [DONE]"]
     T06 --> T07["TICKET-07: UX, Accessibility & PWA Polish [DONE]"]
-    T07 --> T08["TICKET-08: Submission Package, PROCESS.md & Video Demo [ACTIVE]"]
+    T07 --> T075["TICKET-07.5: Visual Polish & Data Consistency [ACTIVE]"]
+    T075 --> T076["TICKET-07.6: External Review Protocol (GLM 5.3 Flash) [READY]"]
+    T076 --> T08["TICKET-08: Submission Package, PROCESS.md & Video Demo [NEXT]"]
     T08 --> T09["TICKET-09: Post-Contest Decommissioning (29.11.2026)"]
 
     style T01 fill:#22c55e,stroke:#16a34a,color:#fff
@@ -80,7 +84,9 @@ graph TD
     style T04 fill:#22c55e,stroke:#16a34a,color:#fff
     style T06 fill:#22c55e,stroke:#16a34a,color:#fff
     style T07 fill:#22c55e,stroke:#16a34a,color:#fff
-    style T08 fill:#eab308,stroke:#ca8a04,color:#000
+    style T075 fill:#eab308,stroke:#ca8a04,color:#000
+    style T076 fill:#38bdf8,stroke:#0284c7,color:#000
+    style T08 fill:#94a3b8,stroke:#64748b,color:#000
     style T09 fill:#94a3b8,stroke:#64748b,color:#000
 ```
 
@@ -95,5 +101,7 @@ graph TD
 | **TICKET-05** | Оболочка Telegram Mini App | ⚪ **SKIPPED** | P2 (Отложен) | [TICKET-05](TICKET-05-telegram-mini-app.md) |
 | **TICKET-06** | Генератор PDF-справок и панель деканата | 🟢 **DONE** | P1 (Высокий) | [TICKET-06](TICKET-06-certificates-and-staff-polish.md) |
 | **TICKET-07** | Финальная полировка UX, доступность и PWA | 🟢 **DONE** | P1 (Высокий) | [TICKET-07](TICKET-07-ux-pwa-final-polish.md) |
-| **TICKET-08** | Конкурсный пакет, отчет PROCESS.md и видео | 🟡 **ACTIVE** | P0 (Критичный) | [TICKET-08](TICKET-08-submission-package.md) |
+| **TICKET-07.5** | Визуальная полировка UI, консистентность и MAX | 🟡 **ACTIVE** | P0 (Критичный) | [TICKET-07.5](TICKET-07.5-visual-polish-data-consistency.md) |
+| **TICKET-07.6** | Протокол внешнего аудита через GLM 5.3 Flash | 🔵 **READY** | P1 (Верификация) | [TICKET-07.6](TICKET-07.6-external-review-glm.md) |
+| **TICKET-08** | Конкурсный пакет, отчет PROCESS.md и видео | ⚪ **NEXT** | P0 (Критичный) | [TICKET-08](TICKET-08-submission-package.md) |
 | **TICKET-09** | Вывод инфраструктуры из эксплуатации и защита от списаний | ⚪ **OPEN (Scheduled: 29.11.2026)** | P1 (Безопасность) | [TICKET-09](TICKET-09-post-contest-decommissioning.md) |

@@ -30,7 +30,7 @@ const WEEKDAYS = [
 ];
 
 export default function SchedulePage() {
-  const [selectedGroupId, setSelectedGroupId] = useState<string>("07131-DB");
+  const [selectedGroupId, setSelectedGroupId] = useState<string>("CD-23-1");
   const [selectedDay, setSelectedDay] = useState<number>(1);
   const [activeLesson, setActiveLesson] = useState<LessonItem | null>(null);
 
@@ -75,7 +75,7 @@ export default function SchedulePage() {
               type="button"
               onClick={() => setSelectedGroupId(g.id)}
               className={cn(
-                "py-2 px-3 rounded-xl text-xs font-semibold transition-all text-center select-none cursor-pointer",
+                "py-2 px-3 rounded-xl text-xs font-semibold transition-colors duration-150 text-center select-none cursor-pointer",
                 isSelected
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground hover:bg-background/50 active:scale-98"
@@ -97,7 +97,7 @@ export default function SchedulePage() {
               type="button"
               onClick={() => setSelectedDay(w.day)}
               className={cn(
-                "py-2 rounded-xl text-center text-xs font-semibold transition-all select-none cursor-pointer",
+                "py-2 rounded-xl text-center text-xs font-semibold transition-colors duration-150 select-none cursor-pointer",
                 isSelected
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "bg-background text-muted-foreground hover:bg-muted hover:text-foreground border border-border active:scale-95"
