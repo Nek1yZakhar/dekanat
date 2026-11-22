@@ -218,7 +218,7 @@ export default function AiAssistantPage() {
   };
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col h-[calc(100dvh-170px)] sm:h-[calc(100dvh-150px)]">
+    <div className="flex-1 flex flex-col min-h-[calc(100vh-140px)]">
       {/* Header */}
       <div className="mb-2 shrink-0 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -248,8 +248,8 @@ export default function AiAssistantPage() {
         )}
       </div>
 
-      {/* Chat Messages Scroll Area */}
-      <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1 pb-2">
+      {/* Chat Messages List (Natural document flow) */}
+      <div className="flex-1 space-y-3 pb-3">
         {messages.map((m) => {
           const isUser = m.role === "user";
           return (
@@ -326,45 +326,48 @@ export default function AiAssistantPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Suggestions Chips (scrollbar-none) */}
-      <div className="flex gap-1.5 overflow-x-auto py-2 shrink-0 scrollbar-none">
-        {SUGGESTIONS.map((item, idx) => (
-          <button
-            key={idx}
-            type="button"
-            onClick={() => handleSend(item)}
-            disabled={loading}
-            className="px-2.5 py-1 rounded-lg border border-border bg-background text-[11px] text-muted-foreground whitespace-nowrap hover:bg-muted hover:text-foreground active:scale-95 transition-all select-none cursor-pointer"
-          >
-            {item}
-          </button>
-        ))}
-      </div>
+      {/* Quick Suggestions & Input Bar Sticky at bottom */}
+      <div className="sticky bottom-16 md:bottom-0 z-20 bg-background/95 backdrop-blur-md pt-2 pb-1 border-t border-border -mx-4 px-4 mt-auto">
+        {/* Quick Suggestions Chips */}
+        <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-none">
+          {SUGGESTIONS.map((item, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => handleSend(item)}
+              disabled={loading}
+              className="px-2.5 py-1 rounded-lg border border-border bg-card text-[11px] text-muted-foreground whitespace-nowrap hover:bg-muted hover:text-foreground active:scale-95 transition-all select-none cursor-pointer shadow-2xs"
+            >
+              {item}
+            </button>
+          ))}
+        </div>
 
-      {/* Chat Input Bar */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSend();
-        }}
-        className="flex gap-1.5 pt-1 shrink-0 pb-1"
-      >
-        <Input
-          placeholder="Спросите о пересдачах, стипендии, справках..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          disabled={loading}
-          className="text-xs h-10"
-        />
-        <Button
-          type="submit"
-          size="sm"
-          disabled={loading || !input.trim()}
-          className="h-10 px-3 cursor-pointer"
+        {/* Chat Input Bar */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSend();
+          }}
+          className="flex gap-1.5"
         >
-          <Send className="w-4 h-4" />
-        </Button>
-      </form>
+          <Input
+            placeholder="Спросите о пересдачах, стипендии, справках..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            disabled={loading}
+            className="text-xs h-10 bg-background"
+          />
+          <Button
+            type="submit"
+            size="sm"
+            disabled={loading || !input.trim()}
+            className="h-10 px-3 cursor-pointer"
+          >
+            <Send className="w-4 h-4" />
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }
