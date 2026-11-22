@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Background Gradient (Sapphire Indigo) -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+
+    <!-- Outer Border Gradient for High-Contrast on Dark & Light Tabs -->
+    <linearGradient id="border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.7" />
+    </linearGradient>
+
+    <!-- Academic Cap White/Silver Gradient -->
+    <linearGradient id="cap-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+
+    <!-- Under-Cap Shade Gradient -->
+    <linearGradient id="cap-shade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#cbd5e1" />
+      <stop offset="100%" stop-color="#94a3b8" />
+    </linearGradient>
+
+    <!-- Academic Gold Tassel Gradient -->
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+
+    <!-- Digital AI Sparkle Gradient -->
+    <linearGradient id="sparkle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base with Gradient Border -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bg-grad)" stroke="url(#border-grad)" stroke-width="2" />
+
+  <!-- Subtle Top Highlight Flare -->
+  <rect x="4" y="4" width="56" height="24" rx="14" fill="#ffffff" opacity="0.05" />
+
+  <!-- Graduation Cap Under-Dome (Skull Cap) -->
+  <path d="M 21,31 L 21,38 C 21,44.5 43,44.5 43,38 L 43,31 C 39.5,32.5 35.8,33.5 32,33.5 C 28.2,33.5 24.5,32.5 21,31 Z" fill="url(#cap-shade)" />
+
+  <!-- Graduation Cap Mortarboard Diamond -->
+  <polygon points="32,19 49,27 32,35 15,27" fill="url(#cap-grad)" stroke="#ffffff" stroke-width="0.5" />
+
+  <!-- Top Button -->
+  <circle cx="32" cy="27" r="2.2" fill="url(#gold-grad)" />
+
+  <!-- Gold Tassel Ribbon -->
+  <path d="M 32,27 C 25,27 20,31 19,36" stroke="url(#gold-grad)" stroke-width="2" stroke-linecap="round" fill="none" />
+  
+  <!-- Tassel Knot & Fringe -->
+  <circle cx="19" cy="36" r="1.6" fill="url(#gold-grad)" />
+  <path d="M 17.5,37.5 L 20.5,37.5 L 21.8,45 L 16.2,45 Z" fill="url(#gold-grad)" />
+
+  <!-- Primary AI Sparkle (Top-Right) -->
+  <path d="M 47,10 C 47,14 49.5,16.5 53.5,16.5 C 49.5,16.5 47,19 47,23 C 47,19 44.5,16.5 40.5,16.5 C 44.5,16.5 47,14 47,10 Z" fill="url(#sparkle-grad)" />
+
+  <!-- Secondary Micro AI Sparkle -->
+  <path d="M 54,24 C 54,25.8 55.2,27 57,27 C 55.2,27 54,28.2 54,30 C 54,28.2 52.8,27 51,27 C 52.8,27 54,25.8 54,24 Z" fill="url(#sparkle-grad)" opacity="0.85" />
+</svg>

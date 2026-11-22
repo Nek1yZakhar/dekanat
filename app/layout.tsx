@@ -15,6 +15,10 @@ export const metadata: Metadata = {
     title: "Деканат ИГУ",
   },
   icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
     apple: "/apple-touch-icon.png",
   },
   robots: {
