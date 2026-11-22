@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { AlertCircle, X } from "lucide-react";
+import { MaxRobotLogo } from "@/components/max-logo";
 
 export function DisclaimerBanner() {
   const [dismissed, setDismissed] = useState<boolean>(true); // Start true to prevent flash
@@ -42,12 +43,12 @@ export function DisclaimerBanner() {
   return (
     <aside
       aria-label="Дисклеймер концепта"
-      className="sticky top-0 z-50 w-full bg-slate-900 border-b border-slate-800 px-3 py-1.5 text-xs text-slate-100 flex items-center justify-between gap-2 shadow-sm"
+      className="w-full bg-slate-900 border-b border-slate-800 px-3 py-1.5 text-xs text-slate-100 flex items-center justify-between gap-2 shadow-sm"
     >
       <div className="flex items-center gap-1.5 overflow-hidden text-ellipsis whitespace-nowrap min-w-0">
         <AlertCircle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
         <span className="truncate font-medium text-xs text-slate-200">
-          Концепт для конкурса. Не является официальным сервисом ИГУ
+          Концепт для конкурса • Не является оф. сервисом ИГУ • Демо-режим (сброс через 1 час неактивности)
         </span>
       </div>
 
@@ -58,14 +59,7 @@ export function DisclaimerBanner() {
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition-colors active:scale-95 cursor-pointer"
             aria-label="Открыть интерактивный симулятор платформы MAX"
           >
-            <svg
-              className="w-3.5 h-3.5 text-white shrink-0"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path d="M4 4h3.5l4.5 7.5L16.5 4H20v16h-3.5V9.5L12 17l-4.5-7.5V20H4V4z" />
-            </svg>
+            <MaxRobotLogo className="w-3.5 h-3.5 text-white shrink-0" />
             <span>Оболочка MAX</span>
           </Link>
 
@@ -80,7 +74,7 @@ export function DisclaimerBanner() {
         <button
           type="button"
           onClick={handleDismiss}
-          className="p-1 rounded-md text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+          className="p-1 rounded-md text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors cursor-pointer"
           title="Скрыть предупреждение на время сессии"
           aria-label="Скрыть дисклеймер"
         >

@@ -19,8 +19,8 @@ export default async function StudentLayout({
   return (
     <div className="flex-1 flex flex-col min-h-screen pb-20 md:pb-6">
       <RealtimeListener userId={session.id} />
-      {/* Student App Bar */}
-      <header className="sticky top-0 z-30 w-full bg-background border-b border-border shadow-xs px-4 py-2.5 flex items-center justify-between">
+      {/* Student App Bar (Static in normal page flow to prevent sticky overlap) */}
+      <header className="w-full bg-background border-b border-border px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2.5 overflow-hidden">
           <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <User className="w-4 h-4" />

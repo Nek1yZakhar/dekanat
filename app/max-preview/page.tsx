@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { MaxRobotLogo } from "@/components/max-logo";
 
 export default function MaxPreviewPage() {
   const [deviceWidth, setDeviceWidth] = useState<number>(390); // 390px (iPhone) or 360px (Android)
@@ -163,10 +164,8 @@ export default function MaxPreviewPage() {
                 </button>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    {/* Authentic MAX Geometric "M" Vector Logo */}
-                    <svg className="w-3.5 h-3.5 text-blue-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M4 4h3.5l4.5 7.5L16.5 4H20v16h-3.5V9.5L12 17l-4.5-7.5V20H4V4z" />
-                    </svg>
+                    {/* Official Robot Max Logo */}
+                    <MaxRobotLogo className="w-4 h-4 text-blue-400 shrink-0" />
                     <span className="text-xs font-bold text-white truncate">Цифровой деканат ИГУ</span>
                     <span title="Государственная верификация" className="inline-flex items-center">
                       <ShieldCheck className="w-3.5 h-3.5 text-blue-400 shrink-0" />

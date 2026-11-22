@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { DisclaimerBanner } from "@/components/disclaimer-banner";
 import { MAXBridgeInitializer } from "@/components/max-bridge-initializer";
+import { ActivityTracker } from "@/components/activity-tracker";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
@@ -37,6 +38,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/20 flex flex-col">
+        <ActivityTracker />
         <MAXBridgeInitializer />
         <Toaster richColors position="top-center" closeButton />
         <DisclaimerBanner />

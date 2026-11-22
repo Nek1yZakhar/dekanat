@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { GraduationCap, LogIn, UserCheck, ShieldAlert, Loader2, AlertTriangle, Building2 } from "lucide-react";
+import { GraduationCap, LogIn, UserCheck, ShieldAlert, Loader2, AlertTriangle, Building2, BookOpen } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -174,7 +174,17 @@ export default function LoginPage() {
                 onClick={() => fillQuickAccount("student2@dekanat.fake", "DekanatPass2026!")}
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                <span>Студент 2 (С задолженностью по матанализу)</span>
+                <span>Студент 2: Кузнецова (1 долг по матанализу)</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="justify-start text-xs h-8 gap-2 cursor-pointer"
+                onClick={() => fillQuickAccount("student3@dekanat.fake", "DekanatPass2026!")}
+              >
+                <BookOpen className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                <span>Студент 3: Иванова (Международные отношения, 07131-ДБ)</span>
               </Button>
               <Button
                 type="button"

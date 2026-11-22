@@ -128,13 +128,14 @@ export default async function DashboardPage() {
       {/* Path to Diploma & Academic Risk Simulator Preview */}
       <Card className="border-border">
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold flex items-center gap-1.5">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <span className="text-xs font-semibold flex items-center gap-1.5 shrink-0">
               <TrendingUp className="w-4 h-4 text-primary" />
               Путь к диплому и риски
             </span>
             <Badge
               variant={risk.level === "low" ? "success" : risk.level === "medium" ? "warning" : "destructive"}
+              className="shrink-0"
             >
               {risk.level === "low" ? (
                 <span className="flex items-center gap-1">

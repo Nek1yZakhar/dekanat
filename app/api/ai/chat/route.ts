@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import https from "node:https";
+import http from "node:http";
+import { URL } from "node:url";
 import { SocksProxyAgent } from "socks-proxy-agent";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -93,46 +96,75 @@ async function queryLLM(
   baseUrl: string,
   proxyUrl?: string
 ): Promise<string | null> {
-  const agent = proxyUrl ? new SocksProxyAgent(proxyUrl) : undefined;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000);
+  const payload = JSON.stringify({
+    model,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userMessage },
+    ],
+    temperature: 0.2,
+  });
 
   try {
-    const fetchOptions: RequestInit & { agent?: SocksProxyAgent } = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userMessage },
-        ],
-        temperature: 0.2,
-      }),
-      signal: controller.signal,
-    };
+    const parsedUrl = new URL(`${baseUrl}/chat/completions`);
+    const isHttps = parsedUrl.protocol === "https:";
+    const transport = isHttps ? https : http;
+    const agent = proxyUrl ? new SocksProxyAgent(proxyUrl) : undefined;
 
-    if (agent) {
-      fetchOptions.agent = agent;
-    }
+    return await new Promise<string | null>((resolve) => {
+      const req = transport.request(
+        parsedUrl,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Length": Buffer.byteLength(payload),
+          },
+          agent,
+          timeout: 10000,
+        },
+        (res) => {
+          let data = "";
+          res.on("data", (chunk) => {
+            data += chunk;
+          });
+          res.on("end", () => {
+            if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+              try {
+                const json = JSON.parse(data);
+                resolve(json.choices?.[0]?.message?.content || null);
+              } catch (e) {
+                console.warn(`Failed to parse LLM response for ${model}:`, e);
+                resolve(null);
+              }
+            } else {
+              console.warn(
+                `LLM model ${model} returned HTTP ${res.statusCode}: ${data.slice(0, 150)}`
+              );
+              resolve(null);
+            }
+          });
+        }
+      );
 
-    const response = await fetch(`${baseUrl}/chat/completions`, fetchOptions);
+      req.on("error", (err) => {
+        console.warn(`LLM request to ${model} failed:`, err.message);
+        resolve(null);
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      return data.choices?.[0]?.message?.content || null;
-    } else {
-      console.warn(`LLM model ${model} returned HTTP ${response.status}`);
-      return null;
-    }
+      req.on("timeout", () => {
+        req.destroy();
+        console.warn(`LLM request to ${model} timed out`);
+        resolve(null);
+      });
+
+      req.write(payload);
+      req.end();
+    });
   } catch (err) {
-    console.warn(`LLM call to ${model} failed`, err);
+    console.warn(`LLM setup error for ${model}:`, err);
     return null;
-  } finally {
-    clearTimeout(timeoutId);
   }
 }
 
@@ -167,8 +199,9 @@ export async function POST(req: NextRequest) {
 
     const aiKey = process.env.AI_API_KEY;
     const aiBaseUrl = process.env.AI_BASE_URL || "https://openrouter.ai/api/v1";
-    const primaryModel = process.env.AI_MODEL || "google/gemma-4-31b-it:free";
-    const backupModel = "baidu/ernie-5.5-flash-preview:free";
+    const primaryModel = process.env.AI_MODEL || "nvidia/nemotron-3.5-lightning:free";
+    const backupModel = "liquid/lfm-3-1.7b:free";
+    const tertiaryModel = "google/gemma-4-31b-it:free";
     const proxyUrl = process.env.AI_PROXY_URL || process.env.OUTBOUND_FOREIGN_PROXY_URL;
 
     // 1. Hybrid RAG retrieval: search Supabase regulation_chunks with memory fallback
@@ -194,15 +227,21 @@ ${relevantChunks.map((c) => `[${c.article}]: ${c.content}`).join("\n\n")}
 2. Отвечайте вежливо, лаконично и по существу вопроса студента.
 3. Если вопрос касается подачи официального заявления, вежливо порекомендуйте оформить обращение в разделе «Заявки» мобильного портала.`;
 
-      // Try Primary Model (google/gemma-4-31b-it:free)
+      // Try Primary Model
       generatedReply = await queryLLM(systemPrompt, message, primaryModel, aiKey, aiBaseUrl, proxyUrl);
       if (generatedReply) {
         usedModel = primaryModel;
       } else {
-        // Fallback to Backup Free Model (baidu/ernie-5.5-flash-preview:free)
+        // Fallback to Backup Model
         generatedReply = await queryLLM(systemPrompt, message, backupModel, aiKey, aiBaseUrl, proxyUrl);
         if (generatedReply) {
           usedModel = backupModel;
+        } else {
+          // Fallback to Tertiary Model
+          generatedReply = await queryLLM(systemPrompt, message, tertiaryModel, aiKey, aiBaseUrl, proxyUrl);
+          if (generatedReply) {
+            usedModel = tertiaryModel;
+          }
         }
       }
     }

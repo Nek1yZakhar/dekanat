@@ -51,22 +51,33 @@ async function runSeed() {
   // 2. Insert Groups
   console.log('👥 Seeding groups...');
   const facultyName = 'Факультет прикладной цифровизации и анализа данных';
+  const facultyHistory = 'Исторический факультет ИГУ, 1 курс (очная форма)';
   const { data: groups, error: groupsError } = await supabase
     .from('groups')
     .upsert([
       { name: 'ЦД-23-1', faculty: facultyName },
       { name: 'ЦД-23-2', faculty: facultyName },
       { name: 'ЦД-24-1', faculty: facultyName },
+      { name: '07131-ДБ', faculty: facultyHistory },
     ], { onConflict: 'name' })
     .select();
 
   if (groupsError) throw groupsError;
   const group1 = groups.find((g) => g.name === 'ЦД-23-1')!;
   const group2 = groups.find((g) => g.name === 'ЦД-23-2')!;
+  const group3 = groups.find((g) => g.name === '07131-ДБ')!;
 
   // 3. Create or Fetch Auth Users
   console.log('🔐 Provisioning test Auth accounts...');
-  async function ensureUser(email: string, password: string, fullName: string, role: 'student' | 'staff', groupId?: string) {
+  async function ensureUser(
+    email: string,
+    password: string,
+    fullName: string,
+    role: 'student' | 'staff',
+    groupId?: string,
+    customFaculty?: string,
+    customProgram?: string
+  ) {
     const { data: existingUsers } = await supabase.auth.admin.listUsers();
     let user = existingUsers.users.find((u) => u.email === email);
 
@@ -85,9 +96,9 @@ async function runSeed() {
     await supabase.from('profiles').upsert({
       id: user.id,
       full_name: fullName,
-      faculty: role === 'staff' ? 'Деканат' : facultyName,
-      program: role === 'staff' ? 'Администрация' : 'Прикладная информатика и интеллектуальные системы',
-      course_year: role === 'staff' ? 1 : 3,
+      faculty: role === 'staff' ? 'Деканат' : (customFaculty || facultyName),
+      program: role === 'staff' ? 'Администрация' : (customProgram || 'Прикладная информатика и интеллектуальные системы'),
+      course_year: role === 'staff' ? 1 : 1,
       group_id: groupId || null,
       role,
       phone: '+7 (999) 000-00-00',
@@ -98,9 +109,10 @@ async function runSeed() {
 
   const studentUser1 = await ensureUser('student1@dekanat.fake', 'DekanatPass2026!', 'Смирнов Алексей Владимирович', 'student', group1.id);
   const studentUser2 = await ensureUser('student2@dekanat.fake', 'DekanatPass2026!', 'Кузнецова Мария Сергеевна', 'student', group2.id);
+  const studentUser3 = await ensureUser('student3@dekanat.fake', 'DekanatPass2026!', 'Иванова Анна Дмитриевна', 'student', group3.id, facultyHistory, '41.03.05 «Международные отношения»');
   const staffUser = await ensureUser('staff@dekanat.fake', 'DekanatPass2026!', 'Соколова Елена Павловна', 'staff');
 
-  console.log('✅ Accounts ready: Student 1, Student 2, Staff');
+  console.log('✅ Accounts ready: Student 1, Student 2, Student 3, Staff');
 
   // 4. Seed Lessons for Group 1 and Group 2
   console.log('📚 Seeding timetable lessons...');
@@ -116,6 +128,13 @@ async function runSeed() {
     { group_id: group2.id, discipline: 'Архитектура ИС', kind: 'seminar', weekday: 2, start_time: '10:45', end_time: '12:15', room: 'ауд. 204', teacher: 'Федоров Д.А.' },
     { group_id: group2.id, discipline: 'Теория вероятностей', kind: 'lecture', weekday: 3, start_time: '09:00', end_time: '10:30', room: 'ауд. 301', teacher: 'Морозов А.В.' },
     { group_id: group2.id, discipline: 'Операционные системы', kind: 'lab', weekday: 4, start_time: '13:00', end_time: '14:30', room: 'комп. класс 1', teacher: 'Николаев Е.Ю.' },
+
+    // Group 3 (07131-DB, International Relations ISU)
+    { group_id: group3.id, discipline: 'Введение в специальность', kind: 'lecture', weekday: 1, start_time: '08:30', end_time: '10:00', room: 'ауд. 307', teacher: 'доц. Елохина Ю.В.' },
+    { group_id: group3.id, discipline: 'Новая история стран Европы и Америки', kind: 'lecture', weekday: 2, start_time: '10:10', end_time: '11:40', room: 'ауд. 329', teacher: 'проф. Костров А.В.' },
+    { group_id: group3.id, discipline: 'История международных отношений', kind: 'seminar', weekday: 3, start_time: '11:50', end_time: '13:20', room: 'ауд. 329', teacher: 'доц. Матвеева Е.А.' },
+    { group_id: group3.id, discipline: 'Иностранный язык (английский)', kind: 'practice', weekday: 4, start_time: '08:30', end_time: '10:00', room: 'ауд. 233', teacher: 'ст.преп. Алексеева Е.Е.' },
+    { group_id: group3.id, discipline: 'Основы российской государственности', kind: 'lecture', weekday: 5, start_time: '10:10', end_time: '11:40', room: 'ауд. 307', teacher: 'доц. Шмидт С.Ф.' },
   ];
 
   const { data: createdLessons, error: lessonsErr } = await supabase.from('lessons').insert(lessonsData).select();
@@ -157,6 +176,13 @@ async function runSeed() {
     { student_id: studentUser2.id, discipline: 'Архитектура ИС', semester: '2024/2025-2', grade: '3', points: 64, teacher: 'Федоров Д.А.' },
     { student_id: studentUser2.id, discipline: 'Безопасность жизнедеятельности', semester: '2024/2025-2', grade: 'зачёт', points: 80, teacher: 'Попов В.Г.' },
     { student_id: studentUser2.id, discipline: 'Линейная алгебра', semester: '2024/2025-1', grade: '4', points: 78, teacher: 'Морозов А.В.' },
+
+    // Student 3 (Anna Ivanova, International Relations ISU, Good GPA 4.67, No debts)
+    { student_id: studentUser3.id, discipline: 'Новая история стран Европы и Америки', semester: '2024/2025-1', grade: '5', points: 94, teacher: 'проф. Костров А.В.' },
+    { student_id: studentUser3.id, discipline: 'История международных отношений', semester: '2024/2025-1', grade: '5', points: 91, teacher: 'доц. Матвеева Е.А.' },
+    { student_id: studentUser3.id, discipline: 'Иностранный язык (английский)', semester: '2024/2025-1', grade: '4', points: 85, teacher: 'ст.преп. Алексеева Е.Е.' },
+    { student_id: studentUser3.id, discipline: 'Введение в специальность', semester: '2024/2025-1', grade: 'зачёт', points: 90, teacher: 'доц. Елохина Ю.В.' },
+    { student_id: studentUser3.id, discipline: 'Основы российской государственности', semester: '2024/2025-1', grade: 'зачёт', points: 88, teacher: 'доц. Шмидт С.Ф.' },
   ]);
 
   // 7. Seed Requests and Events
