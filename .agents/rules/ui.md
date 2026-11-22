@@ -45,5 +45,21 @@
 
 ## 8. Modal Dialogs, Document Cards & High-Contrast Footers
 - **Modal Dialog Footers**: Modal dialogs displaying documents or external embeds (e.g., `CertificateModal`) MUST feature a solid, high-contrast footer background (`bg-card border-t border-border`), completely preventing transparency or dark overlay bleed-through from the backdrop. Action buttons inside modal footers must have distinct visual hierarchies: primary action (e.g., «Скачать PDF») MUST have a vibrant solid fill with high-contrast text (`bg-emerald-600 text-white font-semibold`), while secondary actions («В новой вкладке», «Печать») must use distinct contrasting borders and readable foreground text (`text-foreground`).
-- **Document & Status Cards**: Notification cards (e.g., ready certificates on `/requests`) must use clean semi-transparent cards (`bg-card/75 backdrop-blur-xs border border-emerald-500/30`) with high-contrast primary text (`text-foreground`). Murky, low-contrast solid blocks (e.g., dense grey-green backgrounds with washed-out text) are strictly prohibited.
+- **Document & Status Cards**: Notification cards (e.g., ready certificates on `/requests`) must use clean solid cards (`bg-card border border-emerald-500/30`) with high-contrast primary text (`text-foreground`). Murky, low-contrast solid blocks are strictly prohibited.
 - **Natural Administrative Copy**: UI copy must avoid archaic or overly bureaucratic jargon. Use «забрать оригинал с печатью в кабинете 201» instead of «с мокрой печатью».
+
+## 9. Zero Native Selects in Modals & Forms (B2B UI Standard)
+- Native `<select>` elements and browser-default form controls are strictly prohibited in application forms and modal dialogs.
+- All dropdowns must use accessible custom select primitives (`CustomSelect`) with semantic SVG chevrons, checkmark indicators, keyboard accessibility (Escape to dismiss), click-outside handlers, and state synchronization.
+
+## 10. Anti-Flex-Squishing Invariant
+- Side-by-side flex layouts (`flex-row justify-between` or `sm:flex-row`) containing descriptive explanatory text alongside action buttons are strictly forbidden when the text can be compressed into an unreadable column.
+- Long text blocks and status explanations must occupy the full card width, with action buttons placed directly below as a full-width or naturally sized vertical stack (`flex flex-col gap-3`).
+
+## 11. Fluid Container Responsive Policy (max-w-2xl..4xl)
+- Clamping the entire viewport to an arbitrary narrow phone width (`max-w-md mx-auto` = 448px) at document root level is strictly prohibited.
+- The platform uses a fluid container architecture: `max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-3 sm:px-4`, allowing the interface to scale gracefully from mobile devices (360px–430px) through tablets (768px) to desktop monitors (1366px–1920px) without distortion or excessive line length.
+
+## 12. Viewport Height Dynamic Safe Area (100dvh & min-h-0)
+- Hardcoded viewport height subtractions (such as `h-[calc(100vh-135px)]`) are prohibited for interactive multi-component screens containing floating banners, headers, and bottom tab bars.
+- Screens with chat inputs or scrollable message histories must use dynamic viewport units (`100dvh`), `flex-1 min-h-0 flex flex-col`, and pin bottom inputs above fixed navigation bars without overlap or clipping.

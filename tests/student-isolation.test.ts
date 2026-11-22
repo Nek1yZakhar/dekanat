@@ -3,11 +3,20 @@ import {
   INITIAL_GRADES,
   STUDENT2_DEFAULT_GRADES,
   STUDENT3_DEFAULT_GRADES,
-} from "@/app/(student)/grades/grades-client-view";
+} from "@/lib/grades-data";
 import { evaluateAcademicRisk } from "@/lib/academic";
 import { getLessonsByGroup } from "@/lib/schedule-data";
 
-describe("TICKET-07.7: Student Data Isolation & SSoT", () => {
+describe("TICKET-07.7 & TICKET-07.8: Student Data Isolation & SSR Safety", () => {
+  it("grades-data exports are genuine Arrays with functional .find/.filter methods for SSR", () => {
+    expect(Array.isArray(INITIAL_GRADES)).toBe(true);
+    expect(typeof INITIAL_GRADES.find).toBe("function");
+    expect(typeof INITIAL_GRADES.filter).toBe("function");
+
+    const found = INITIAL_GRADES.find((g) => g.discipline === "Базы данных и SQL");
+    expect(found).toBeDefined();
+    expect(found?.grade).toBe("5");
+  });
   it("Student 1 (Alexey Smirnov) has honors GPA 4.8 and 0 academic debts", () => {
     const risk = evaluateAcademicRisk(INITIAL_GRADES);
     expect(risk.averageGrade).toBe(4.8);

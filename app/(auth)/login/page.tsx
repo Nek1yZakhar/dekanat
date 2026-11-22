@@ -160,17 +160,17 @@ export default function LoginPage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="justify-start text-xs h-8 gap-2 cursor-pointer"
+                className="justify-start text-xs h-auto min-h-8 py-1.5 px-3 gap-2 cursor-pointer text-left whitespace-normal leading-tight"
                 onClick={() => fillQuickAccount("student1@dekanat.fake", "DekanatPass2026!")}
               >
                 <GraduationCap className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Студент 1 (Отличник, без долгов)</span>
+                <span>Студент 1: Смирнов (Отличник, без долгов)</span>
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="justify-start text-xs h-8 gap-2 cursor-pointer"
+                className="justify-start text-xs h-auto min-h-8 py-1.5 px-3 gap-2 cursor-pointer text-left whitespace-normal leading-tight"
                 onClick={() => fillQuickAccount("student2@dekanat.fake", "DekanatPass2026!")}
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
@@ -180,7 +180,7 @@ export default function LoginPage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="justify-start text-xs h-8 gap-2 cursor-pointer"
+                className="justify-start text-xs h-auto min-h-8 py-1.5 px-3 gap-2 cursor-pointer text-left whitespace-normal leading-tight"
                 onClick={() => fillQuickAccount("student3@dekanat.fake", "DekanatPass2026!")}
               >
                 <BookOpen className="w-3.5 h-3.5 text-sky-500 shrink-0" />
@@ -190,7 +190,7 @@ export default function LoginPage() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="justify-start text-xs h-8 gap-2 cursor-pointer"
+                className="justify-start text-xs h-auto min-h-8 py-1.5 px-3 gap-2 cursor-pointer text-left whitespace-normal leading-tight"
                 onClick={() => fillQuickAccount("staff@dekanat.fake", "DekanatPass2026!")}
               >
                 <Building2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
@@ -199,12 +199,9 @@ export default function LoginPage() {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-center border-t border-border py-2.5">
-          <p className="text-xs text-muted-foreground">
-            Нет учётной записи?{" "}
-            <Link href="/signup" className="text-primary font-medium hover:underline">
-              Зарегистрироваться
-            </Link>
+        <CardFooter className="flex justify-center border-t border-border py-2.5 bg-muted/20">
+          <p className="text-[11px] text-muted-foreground text-center">
+            Учётные записи выдаются деканатом. Доступ строго для студентов и сотрудников ИГУ.
           </p>
         </CardFooter>
       </Card>

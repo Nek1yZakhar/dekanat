@@ -40,21 +40,22 @@ export default async function DashboardPage() {
 
   const risk = evaluateAcademicRisk(grades);
 
-  // 2. Fetch today's next lesson
-  const todayWeekday = new Date().getDay() || 1; // 1-6
+  // 2. Fetch today's next lesson strictly for the active student's group
+  const studentGroupId = session.groupId || "00000000-0000-0000-0000-000000000010";
   const { data: lessonsData } = await supabase
     .from("lessons")
     .select("*")
+    .eq("group_id", studentGroupId)
     .order("start_time", { ascending: true })
     .limit(1);
 
   const nextLesson = lessonsData?.[0] || {
-    discipline: "Базы данных и SQL",
-    kind: "lab",
-    start_time: "10:45",
-    end_time: "12:15",
-    room: "ауд. 410",
-    teacher: "Петров П.П.",
+    discipline: "Математический анализ",
+    kind: "lecture",
+    start_time: "09:00",
+    end_time: "10:30",
+    room: "ауд. 302",
+    teacher: "доц. Смирнов А.А.",
   };
 
   // 3. Fetch notifications

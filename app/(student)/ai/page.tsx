@@ -218,9 +218,9 @@ export default function AiAssistantPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-135px)]">
+    <div className="flex-1 min-h-0 flex flex-col h-[calc(100dvh-170px)] sm:h-[calc(100dvh-150px)]">
       {/* Header */}
-      <div className="mb-2 flex items-center justify-between gap-2">
+      <div className="mb-2 shrink-0 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-xl bg-primary/10 text-primary">
             <Sparkles className="w-5 h-5" />
@@ -249,7 +249,7 @@ export default function AiAssistantPage() {
       </div>
 
       {/* Chat Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto space-y-3 pr-1 pb-2">
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1 pb-2">
         {messages.map((m) => {
           const isUser = m.role === "user";
           return (
@@ -327,7 +327,7 @@ export default function AiAssistantPage() {
       </div>
 
       {/* Quick Suggestions Chips (scrollbar-none) */}
-      <div className="flex gap-1.5 overflow-x-auto py-2 scrollbar-none">
+      <div className="flex gap-1.5 overflow-x-auto py-2 shrink-0 scrollbar-none">
         {SUGGESTIONS.map((item, idx) => (
           <button
             key={idx}
@@ -347,7 +347,7 @@ export default function AiAssistantPage() {
           e.preventDefault();
           handleSend();
         }}
-        className="flex gap-1.5 pt-1"
+        className="flex gap-1.5 pt-1 shrink-0 pb-1"
       >
         <Input
           placeholder="Спросите о пересдачах, стипендии, справках..."

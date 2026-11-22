@@ -1,13 +1,13 @@
 import React from "react";
 import { requireUserSession } from "@/app/proxy";
 import { createClient } from "@/lib/supabase/server";
+import { GradesClientView } from "./grades-client-view";
 import {
-  GradesClientView,
   ExtendedGradeRecord,
   INITIAL_GRADES,
   STUDENT2_DEFAULT_GRADES,
   STUDENT3_DEFAULT_GRADES,
-} from "./grades-client-view";
+} from "@/lib/grades-data";
 
 export { INITIAL_GRADES };
 
@@ -27,11 +27,12 @@ export default async function GradesPage() {
     grades = dbGrades.map((g, idx) => {
       // Retain authentic details for known student 1 records
       const match = INITIAL_GRADES.find((ig) => ig.discipline === g.discipline);
+      const semStr = String(g.semester || "");
       return {
         id: g.id || `g-${idx}`,
         student_id: g.student_id,
         discipline: g.discipline,
-        semester: g.semester.includes("1") ? "1 семестр" : "2 семестр",
+        semester: semStr.includes("1") ? "1 семестр" : "2 семестр",
         grade: g.grade,
         points: g.points ?? 85,
         zet: match?.zet ?? 3,

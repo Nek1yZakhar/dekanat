@@ -2,9 +2,9 @@
 
 **Проект**: Цифровой деканат (Digital Deanery Concept — MGIMO × AI Challenge, трек Vibe-Coding)  
 - 🚀 **Оперативный статус платформы**: **ЭТАП 6: TICKET-07 (полный UI/UX-полишинг, подлинное расписание ИГУ из Excel, интерактивная шторка дисциплины и ДЗ, WCAG AA доступность, Zero-Emoji, Single-Scrollbar, нативный PWA-манифест и академические AI-гардрейлы) успешно реализован, протестирован (22/22 Vitest, standalone-сборка 15 страниц) и готов к деплою на боевой сервер**. Прототип развернут в **Yandex Cloud (Москва)** с авто-SSL Let's Encrypt: **`https://153.51.174.89.sslip.io`**.
-- 🎯 **Активный фокус**: **TICKET-07.7 [DONE] (Устранение залипания шапки в MAX, изоляция зачетки Кузнецовой и Ивановой, SSoT расписания по студентам, живой AI-деканат через SOCKS5-прокси и автосброс демо-данных через 1 час неактивности успешно развернуты на боевом сервере, 30/30 тестов Vitest пройдены)**.
+- 🎯 **Активный фокус**: **TICKET-07.8 [SPECIFIED] (Комплексная адаптивность UI (Mobile-to-Desktop), фикс зачетки /grades, SSoT расписания на главной и гармонизация дизайн-стандартов)**.
 - 🕒 **Инвариант часовых поясов**: Разработчик Захар в Иркутске (IRKT, UTC+8). Сервер деплоя и дедлайн конкурса в Москве (MSK, UTC+3). Дельта: $+5$ часов ($\text{IRKT} = \text{MSK} + 5$). Дедлайн сдачи: **22.11.2026 23:59 MSK** (= 23.11.2026 04:59 IRKT). Окно активности прототипа для жюри: до 28.11.2026 включительно.
-- **Дата обновления**: 2026-11-23 (00:55 IRKT / 19:55 22.11 МСК)
+- **Дата обновления**: 2026-11-23 (01:25 IRKT / 20:25 22.11 МСК)
 
 ---
 
@@ -45,22 +45,23 @@
 
 ---
 
-## 3. 🎯 Активный тикет: TICKET-07.5 — Визуальная полировка UI, консистентность данных и MAX
+## 3. 🎯 Активный тикет: TICKET-07.8 — Комплексная адаптивность UI, фикс /grades и дизайн-система
 
-- **Идентификатор**: `TICKET-07.5`
-- **Название**: Визуальная полировка UI, устранение рассогласования факультетов, ликвидация полупрозрачных и темных артефактов, палитра WCAG AA, векторный логотип MAX и кастомный тултип
-- **Статус**: 🟢 **DONE (Реализован и протестирован: 26/26 тестов, standalone-сборка)**
-- **Плановый дедлайн**: 22.11.2026 23:59 MSK
-- **Приоритет**: P0 (Критичный визуальный)
-- **Спецификация**: [`specs/TICKET-07.5-visual-polish-data-consistency.md`](../specs/TICKET-07.5-visual-polish-data-consistency.md)
-- **Связанный тикет аудита**: [`specs/TICKET-07.6-external-review-glm.md`](../specs/TICKET-07.6-external-review-glm.md) (Протокол внешнего аудита через GLM 5.3 Flash)
+- **Идентификатор**: `TICKET-07.8`
+- **Название**: Комплексная адаптивность UI (Mobile-to-Desktop), фикс зачетки /grades, SSoT расписания на главной и гармонизация дизайн-стандартов
+- **Статус**: 🟡 **SPECIFIED (Сформирован и согласован по итогам голосового аудита)**
+- **Плановый дедлайн**: 23.11.2026 03:00 IRKT / 22.11.2026 22:00 MSK
+- **Приоритет**: P0 (Критичный UX и стабильность платформы)
+- **Спецификация**: [`specs/TICKET-07.8-responsive-ui-grades-fix-design-system.md`](../specs/TICKET-07.8-responsive-ui-grades-fix-design-system.md)
 
 ### Чек-лист реализации (Scope)
-- [x] 1. **Изоляция и SSoT факультетов**: профиль Смирнова (ЦД-23-1) по умолчанию открывает ИТ-расписание; смена таба на 07131-ДБ динамически меняет шапку на Международные отношения; очистка зачетки от преподавателей чужих кафедр (доц. Шмидт С.Ф.).
-- [x] 2. **Ликвидация паразитных dark-стилей и темных артефактов**: архитектурный фикс `@custom-variant dark (&:where(.dark, .dark *))` в `globals.css`, благородный изумрудный цвет для бейджа «5 (Отлично)» (`emerald-50/800`), замена темно-коричневого баннера на стильный нави/slate-900 дисклеймер.
-- [x] 3. **Непрозрачные плотные подложки (Solid Surfaces)**: шторка ДЗ (`SubjectSheet`) и модалка справки (`CertificateModal`) без полупрозрачного «грязного стекла» и просвечивания текста, концентрические радиусы скругления ($R_{\text{inner}} = 12\text{ px}$, $R_{\text{outer}} = 24\text{ px}$).
-- [x] 4. **Кнопки и статусы очереди деканата**: высококонтрастный текст статуса на `/staff` (`text-emerald-800`) и сочная зеленая залитая кнопка «Открыть справку (PDF)» (`bg-emerald-600 text-white`).
-- [x] 5. **Интеграция MAX**: аутентичный векторный SVG-логотип MAX, десктопный CSS-тултип (`hidden sm:block`) и фиксация шапки панели деканата от наезда скролла в `/max-preview` (универсальный `sticky top-0 bg-background`).
+- [ ] 1. **Изоляция данных зачетки (`lib/grades-data.ts`)**: вынос `INITIAL_GRADES` и студенческих данных из клиентского `"use client"` файла в чистый TS модуль; ликвидация ошибки SSR 500 на `/grades`.
+- [ ] 2. **SSoT выборки ближайшей пары на главной (`/dashboard`)**: фильтрация `lessons` строго по `session.groupId` активного студента; показ пар матанализа/БД для Смирнова вместо чужих пар МО.
+- [ ] 3. **Fluid Responsive Layout (`app/layout.tsx` и `components/mobile-nav.tsx`)**: расширение контейнера `max-w-2xl lg:max-w-3xl xl:max-w-4xl` с сохранением мобильного удобства и адаптацией под десктоп/ноутбуки.
+- [ ] 4. **Анти-сдавливание справки и кастомный селектор (`/requests`)**: вертикальный стек с кнопкой «Открыть справку (PDF)» на всю ширину под текстом; кастомный селектор типа справки вместо нативного `<select>`.
+- [ ] 5. **Flexbox-верстка AI-деканата (`/ai`)**: фиксация инпута над нижней панелью навигации без обрезания (`flex-1 min-h-0 flex flex-col`).
+- [ ] 6. **Ликвидация регистрации и доработка экрана входа (`/login`)**: удаление футера `/signup`, редирект с `/signup` на `/login`, лейбл «Студент 1: Смирнов (Отличник, без долгов)».
+- [ ] 7. **Гармонизация дизайн-стандартов**: проектное правило `.agents/rules/ui_ux_invariants.md` (Zero Native Selects, Anti-Flex-Squishing, Fluid Container) и глобальный скилл `b2b-ui-mastery`.
 
 ---
 
@@ -73,9 +74,10 @@ graph TD
     T03 --> T04["TICKET-04: MAX Mini App Dual-Mode [DONE]"]
     T04 --> T06["TICKET-06: PDF Certificates & Staff Panel Polish [DONE]"]
     T06 --> T07["TICKET-07: UX, Accessibility & PWA Polish [DONE]"]
-    T07 --> T075["TICKET-07.5: Visual Polish & Data Consistency [ACTIVE]"]
-    T075 --> T076["TICKET-07.6: External Review Protocol (GLM 5.3 Flash) [READY]"]
-    T076 --> T08["TICKET-08: Submission Package, PROCESS.md & Video Demo [NEXT]"]
+    T07 --> T075["TICKET-07.5: Visual Polish & Data Consistency [DONE]"]
+    T075 --> T077["TICKET-07.7: Student Isolation & Live AI [DONE]"]
+    T077 --> T078["TICKET-07.8: Responsive UI, Grades Fix & Design System [ACTIVE]"]
+    T078 --> T08["TICKET-08: Submission Package, PROCESS.md & Video Demo [NEXT]"]
     T08 --> T09["TICKET-09: Post-Contest Decommissioning (29.11.2026)"]
 
     style T01 fill:#22c55e,stroke:#16a34a,color:#fff
@@ -84,8 +86,9 @@ graph TD
     style T04 fill:#22c55e,stroke:#16a34a,color:#fff
     style T06 fill:#22c55e,stroke:#16a34a,color:#fff
     style T07 fill:#22c55e,stroke:#16a34a,color:#fff
-    style T075 fill:#eab308,stroke:#ca8a04,color:#000
-    style T076 fill:#38bdf8,stroke:#0284c7,color:#000
+    style T075 fill:#22c55e,stroke:#16a34a,color:#fff
+    style T077 fill:#22c55e,stroke:#16a34a,color:#fff
+    style T078 fill:#eab308,stroke:#ca8a04,color:#000
     style T08 fill:#94a3b8,stroke:#64748b,color:#000
     style T09 fill:#94a3b8,stroke:#64748b,color:#000
 ```
@@ -98,6 +101,10 @@ graph TD
 | **TICKET-02** | Облачная инфраструктура и деплой на Yandex Cloud | 🟢 **DONE** | P0 (Критичный) | [TICKET-02](archive/TICKET-02-cloud-and-deployment.md) |
 | **TICKET-03** | Realtime-уведомления и обновление очереди | 🟢 **DONE** | P1 (Высокий) | [TICKET-03](archive/TICKET-03-realtime-notifications.md) |
 | **TICKET-04** | Оболочка MAX Mini App (Госуслуги / MAX) Dual-Mode | 🟢 **DONE** | P1 (Высокий) | [TICKET-04](archive/TICKET-04-max-mini-app.md) |
+| **TICKET-06** | Генератор официальных PDF-справок и панель деканата | 🟢 **DONE** | P0 (Критичный) | [TICKET-06](archive/TICKET-06-certificates-and-staff-polish.md) |
+| **TICKET-07** | Финальная полировка UX, расписание ИГУ и PWA | 🟢 **DONE** | P0 (Критичный) | [TICKET-07](archive/TICKET-07-ux-pwa-final-polish.md) |
+| **TICKET-07.5** | Визуальная полировка UI, консистентность данных и MAX | 🟢 **DONE** | P0 (Критичный) | [TICKET-07.5](specs/TICKET-07.5-visual-polish-data-consistency.md) |
+| **TICKET-07.8** | Комплексная адаптивность UI, фикс /grades и дизайн-система | 🟡 **ACTIVE** | P0 (Критичный) | [TICKET-07.8](specs/TICKET-07.8-responsive-ui-grades-fix-design-system.md) |
 | **TICKET-05** | Оболочка Telegram Mini App | ⚪ **SKIPPED** | P2 (Отложен) | [TICKET-05](TICKET-05-telegram-mini-app.md) |
 | **TICKET-06** | Генератор PDF-справок и панель деканата | 🟢 **DONE** | P1 (Высокий) | [TICKET-06](TICKET-06-certificates-and-staff-polish.md) |
 | **TICKET-07** | Финальная полировка UX, доступность и PWA | 🟢 **DONE** | P1 (Высокий) | [TICKET-07](TICKET-07-ux-pwa-final-polish.md) |

@@ -43,43 +43,45 @@ export function DisclaimerBanner() {
   return (
     <aside
       aria-label="Дисклеймер концепта"
-      className="w-full bg-slate-900 border-b border-slate-800 px-3 py-1.5 text-xs text-slate-100 flex items-center justify-between gap-2 shadow-sm"
+      className="w-full bg-slate-900 border-b border-slate-800 px-3 py-1.5 text-xs text-slate-100 shadow-sm"
     >
-      <div className="flex items-center gap-1.5 overflow-hidden text-ellipsis whitespace-nowrap min-w-0">
-        <AlertCircle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
-        <span className="truncate font-medium text-xs text-slate-200">
-          Концепт для конкурса • Не является оф. сервисом ИГУ • Демо-режим (сброс через 1 час неактивности)
-        </span>
-      </div>
-
-      <div className="flex items-center gap-2 shrink-0">
-        <div className="relative group">
-          <Link
-            href="/max-preview"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition-colors active:scale-95 cursor-pointer"
-            aria-label="Открыть интерактивный симулятор платформы MAX"
-          >
-            <MaxRobotLogo className="w-3.5 h-3.5 text-white shrink-0" />
-            <span>Оболочка MAX</span>
-          </Link>
-
-          <div
-            role="tooltip"
-            className="hidden sm:block absolute top-full right-0 mt-1.5 px-2.5 py-1 rounded-lg bg-slate-950 text-slate-100 text-[11px] font-medium shadow-xl border border-slate-700/80 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap z-50"
-          >
-            Интерактивный симулятор мобильного супер-аппа MAX (Госуслуги)
-          </div>
+      <div className="w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 overflow-hidden text-ellipsis whitespace-nowrap min-w-0">
+          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+          <span className="truncate font-medium text-xs text-slate-200">
+            Концепт для конкурса • Не является оф. сервисом ИГУ • Демо-режим (сброс через 1 час неактивности)
+          </span>
         </div>
 
-        <button
-          type="button"
-          onClick={handleDismiss}
-          className="p-1 rounded-md text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors cursor-pointer"
-          title="Скрыть предупреждение на время сессии"
-          aria-label="Скрыть дисклеймер"
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="relative group">
+            <Link
+              href="/max-preview"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition-colors active:scale-95 cursor-pointer"
+              aria-label="Открыть интерактивный симулятор платформы MAX"
+            >
+              <MaxRobotLogo className="w-3.5 h-3.5 text-white shrink-0" />
+              <span>Оболочка MAX</span>
+            </Link>
+
+            <div
+              role="tooltip"
+              className="hidden sm:block absolute top-full right-0 mt-1.5 px-2.5 py-1 rounded-lg bg-slate-950 text-slate-100 text-[11px] font-medium shadow-xl border border-slate-700/80 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap z-50"
+            >
+              Интерактивный симулятор мобильного супер-аппа MAX (Госуслуги)
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleDismiss}
+            className="p-1 rounded-md text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors cursor-pointer"
+            title="Скрыть предупреждение на время сессии"
+            aria-label="Скрыть дисклеймер"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
     </aside>
   );

@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { CertificateModal } from "@/components/certificate-modal";
+import { CustomSelect, CustomSelectOption } from "@/components/custom-select";
 
 interface RequestEvent {
   id?: string;
@@ -44,6 +45,24 @@ const TYPE_TITLES: Record<string, string> = {
   reference: "Академическая справка с выпиской оценок",
   application: "Заявление на повторную аттестацию (пересдачу)",
 };
+
+const DOC_TYPE_OPTIONS: CustomSelectOption[] = [
+  {
+    value: "certificate",
+    label: "Справка об обучении (с гербовой печатью)",
+    description: "Для визы, военкомата, работы или соцзащиты",
+  },
+  {
+    value: "reference",
+    label: "Академическая справка (с оценками)",
+    description: "Выписка пройденных дисциплин и баллов БРС",
+  },
+  {
+    value: "application",
+    label: "Заявление на пересдачу дисциплины",
+    description: "Повторная промежуточная аттестация",
+  },
+];
 
 const STATUS_LABELS: Record<string, string> = {
   submitted: "Подано",
@@ -291,15 +310,11 @@ export default function RequestsPage() {
             <form onSubmit={handleCreateRequest} className="space-y-3">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-muted-foreground">Тип документа</label>
-                <select
+                <CustomSelect
                   value={docType}
-                  onChange={(e) => setDocType(e.target.value as any)}
-                  className="w-full h-10 px-3 rounded-xl border border-input bg-background text-xs focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option value="certificate">Справка об обучении (гербовая печать)</option>
-                  <option value="reference">Академическая справка (с оценками)</option>
-                  <option value="application">Заявление на пересдачу дисциплины</option>
-                </select>
+                  onChange={(val) => setDocType(val as any)}
+                  options={DOC_TYPE_OPTIONS}
+                />
               </div>
 
               <div className="space-y-1">
@@ -441,20 +456,20 @@ export default function RequestsPage() {
                   </div>
 
                   {item.status === "ready" && (
-                    <div className="mt-3 p-3.5 rounded-xl bg-card/75 backdrop-blur-xs border border-emerald-500/30 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="mt-3 p-4 rounded-xl bg-card border border-emerald-500/30 shadow-2xs flex flex-col gap-3">
                       <div className="flex items-start gap-2.5">
                         <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
                           <FileCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         </div>
-                        <div className="text-xs text-foreground leading-relaxed">
-                          Справка оформлена и заверена электронной подписью деканата. Вы можете открыть и скачать официальный электронный документ прямо сейчас либо забрать оригинал с печатью в кабинете 201.
+                        <div className="text-xs text-foreground leading-relaxed flex-1">
+                          Справка оформлена и заверена квалифицированной электронной подписью деканата. Вы можете открыть и скачать официальный электронный документ прямо сейчас либо забрать оригинал с гербовой печатью в кабинете 201.
                         </div>
                       </div>
                       <Button
                         type="button"
                         size="sm"
                         onClick={() => setCertificateModalId(item.id)}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shrink-0 gap-1.5 h-9 px-3.5 shadow-sm cursor-pointer"
+                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold gap-2 h-9 shadow-xs cursor-pointer"
                       >
                         <FileCheck className="w-3.5 h-3.5 text-white" />
                         Открыть и скачать справку (PDF)
