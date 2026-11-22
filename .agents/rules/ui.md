@@ -78,4 +78,11 @@
 - **Fixed Viewport Chat Geometry**: Conversational and messaging screens on desktop must use a fixed viewport calculation (`h-[calc(100dvh-130px)] flex flex-col min-h-0 overflow-hidden`), scrolling messages internally (`overflow-y-auto min-h-0`), with the input container pinned at the bottom (`shrink-0 mt-auto`) with comfortable padding and zero cutoff. Outer window vertical scrollbars are strictly forbidden on chat screens.
 - **Multi-Column B2B Density**: On large screens (`md+` / `lg+`), pages must not stretch single-column cards across 900px+ like an oversized mobile phone. Use balanced 2-column or 4-column responsive grids (`grid grid-cols-1 md:grid-cols-2 gap-4`, `grid-cols-2 md:grid-cols-4`) for dashboard widgets, KPI cards, and discipline lists.
 
+## 16. Mandatory UI Craft Skills Protocol (Impeccable & Better-Interface)
+- **Mandatory Skill Activation**: Before implementing, refactoring, or reviewing any frontend component, page, layout, modal, or form in the project, the agent **MUST** consult and apply:
+  1. `impeccable`: Design craft, surface modes (Persuade/Operate/Read), visual hierarchy, typography scales, anti-AI-slop palettes, spacing rhythm, and production finish (`audit`, `polish`, `adapt`).
+  2. `better-interface`: 5-pillar verification (WCAG AA text contrast $\ge 4.5:1$, concentric border radii $R_{\text{inner}} = R_{\text{outer}} - \text{padding}$, 4px/8px grid scale, typography line heights 1.4–1.6, and 6 explicit interactive states).
+- **Zero AI-Slop Guarantee**: Generic, uncalibrated, unreviewed interfaces with awkward stretching or clipping are strictly forbidden.
+
+
 
