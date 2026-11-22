@@ -214,12 +214,18 @@ export function GradesClientView({ initialGrades, studentFullName }: GradesClien
         </CardContent>
       </Card>
 
-      {/* BRS Informational Banner */}
-      <div className="p-3 rounded-2xl bg-primary/5 border border-primary/20 text-xs flex items-start gap-2.5">
+      {/* BRS and ZET Informational Banner */}
+      <div className="p-3.5 rounded-2xl bg-card border border-primary/20 text-xs flex items-start gap-2.5 shadow-2xs">
         <HelpCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-        <div className="space-y-0.5 text-muted-foreground text-[11px] leading-relaxed">
-          <span className="font-semibold text-foreground">Балльно-рейтинговая система (БРС): </span>
-          шкала от 0 до 100 баллов, отражающая работу студента в семестре (посещаемость, тесты, коллоквиумы). Для допуска к сессии необходимо набрать не менее 60 баллов.
+        <div className="space-y-1.5 text-muted-foreground text-[11px] leading-relaxed">
+          <div>
+            <span className="font-semibold text-foreground">Балльно-рейтинговая система (БРС): </span>
+            шкала от 0 до 100 баллов, отражающая работу студента в семестре (посещаемость, тесты, коллоквиумы). Для допуска к сессии необходимо набрать не менее 60 баллов.
+          </div>
+          <div>
+            <span className="font-semibold text-foreground">Зачётная единица трудоёмкости (ЗЕТ): </span>
+            академический «вес» дисциплины (1 ЗЕТ = 36 академических часов общей нагрузки студента, включая аудиторные пары, домашние задания и экзамен). Программа бакалавриата составляет 240 ЗЕТ (по 30 ЗЕТ в семестр).
+          </div>
         </div>
       </div>
 
@@ -289,7 +295,10 @@ export function GradesClientView({ initialGrades, studentFullName }: GradesClien
                       [Симулировать пересдачу]
                     </button>
                   )}
-                  <span className="bg-muted px-2 py-0.5 rounded-md font-medium text-foreground">
+                  <span
+                    className="bg-muted px-2 py-0.5 rounded-md font-medium text-foreground cursor-help"
+                    title={`${g.zet} ЗЕТ (Зачётных Единиц Трудоёмкости) = ${g.zet * 36} академических часов нагрузки. 1 ЗЕТ = 36 часов.`}
+                  >
                     {g.zet} ЗЕТ
                   </span>
                 </div>
