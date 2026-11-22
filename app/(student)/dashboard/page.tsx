@@ -95,7 +95,7 @@ export default async function DashboardPage() {
         {/* Left Column: Next Lesson & Quick Shortcuts */}
         <div className="space-y-4">
           {/* Next Lesson Card */}
-          <Card className="border-primary/20 bg-primary/5">
+          <Card className="card-interactive border-primary/20 bg-primary/5">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-medium text-primary uppercase tracking-wider flex items-center gap-1">
@@ -168,7 +168,7 @@ export default async function DashboardPage() {
         {/* Right Column: Path to Diploma, Risks & Notifications */}
         <div className="space-y-4">
           {/* Path to Diploma & Academic Risk Simulator Preview */}
-          <Card className="border-border">
+          <Card className="card-interactive border-border">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="text-xs font-semibold flex items-center gap-1.5 shrink-0">

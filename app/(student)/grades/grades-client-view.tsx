@@ -16,6 +16,8 @@ import {
   TrendingUp,
   HelpCircle,
   ChevronRight,
+  Calendar,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SubjectSheet } from "@/components/subject-sheet";
@@ -236,10 +238,10 @@ export function GradesClientView({ initialGrades, studentFullName }: GradesClien
             type="button"
             onClick={() => setSelectedSemester(sem)}
             className={cn(
-              "px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors duration-150 border select-none cursor-pointer",
+              "px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 border select-none cursor-pointer",
               selectedSemester === sem
-                ? "bg-primary text-primary-foreground border-primary font-semibold shadow-sm"
-                : "bg-background text-muted-foreground border-border hover:bg-muted active:scale-95"
+                ? "bg-primary text-primary-foreground border-primary shadow-sm scale-[1.02]"
+                : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground active:scale-[0.94]"
             )}
           >
             {sem === "все" ? "Все семестры" : sem}
@@ -247,38 +249,46 @@ export function GradesClientView({ initialGrades, studentFullName }: GradesClien
         ))}
       </div>
 
-      {/* Grade Records List (Responsive 2-Column Grid on md+) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      {/* Grade Records List (Responsive 2-Column Grid on md+ with smooth animation) */}
+      <div key={selectedSemester} className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-up">
         {filteredGrades.map((g) => (
           <Card
             key={g.id}
             onClick={() => openDetails(g)}
-            className="border-border transition-all cursor-pointer hover:border-primary/50 hover:shadow-xs active:scale-[0.99]"
+            className="card-interactive border-border cursor-pointer flex flex-col justify-between"
           >
-            <CardContent className="p-3.5 space-y-2">
-              <div className="flex items-start justify-between gap-3">
-                <div className="space-y-0.5 min-w-0">
-                  <div className="text-xs font-semibold leading-snug text-foreground truncate">
+            <CardContent className="p-5 sm:p-6 flex flex-col justify-between h-full space-y-3">
+              <div>
+                {/* Top Row: Subject Title and Grade Badge */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="text-base sm:text-lg font-bold tracking-tight text-foreground leading-snug">
                     {g.discipline}
                   </div>
-                  <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-                    <span>{g.semester}</span>
-                    <span>•</span>
-                    <span className="truncate">{g.teacher}</span>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {getGradeBadge(g.grade)}
+                    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {getGradeBadge(g.grade)}
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                {/* Metadata Row: Semester and Teacher with Icons */}
+                <div className="flex items-center flex-wrap gap-2.5 text-xs text-muted-foreground mt-2 mb-1">
+                  <span className="flex items-center gap-1 font-medium bg-muted/60 px-2 py-0.5 rounded-md text-foreground shrink-0">
+                    <Calendar className="w-3.5 h-3.5 text-primary" />
+                    <span>{g.semester}</span>
+                  </span>
+                  <span className="flex items-center gap-1.5 truncate min-w-0">
+                    <User className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <span className="truncate">{g.teacher}</span>
+                  </span>
                 </div>
               </div>
 
-              {/* Symmetric Bottom Row: BRS and ZET */}
-              <div className="flex items-center justify-between border-t border-border/50 pt-2 text-[11px] text-muted-foreground">
-                <span className="font-mono text-primary font-medium">
+              {/* Symmetric Bottom Row: BRS and ZET with Retake Simulator */}
+              <div className="flex items-center justify-between border-t border-border/60 pt-3 text-xs text-muted-foreground gap-2">
+                <div className="font-mono text-primary font-semibold bg-primary/10 px-2.5 py-1 rounded-lg text-xs">
                   {g.points !== null && g.points !== undefined ? `БРС: ${g.points}/100` : "БРС: —"}
-                </span>
+                </div>
 
                 <div className="flex items-center gap-2">
                   {(g.grade === "2" || g.grade === "незачёт") && (
@@ -288,14 +298,14 @@ export function GradesClientView({ initialGrades, studentFullName }: GradesClien
                         e.stopPropagation();
                         handleSimulateRetake(g.id, "4");
                       }}
-                      className="text-[10px] text-primary hover:underline font-semibold cursor-pointer"
+                      className="text-xs text-primary hover:underline font-semibold cursor-pointer transition-all active:scale-95"
                       title="Интерактивный симулятор: примерить пересдачу на 4"
                     >
                       [Симулировать пересдачу]
                     </button>
                   )}
                   <span
-                    className="bg-muted px-2 py-0.5 rounded-md font-medium text-foreground cursor-help"
+                    className="bg-muted px-2.5 py-1 rounded-lg font-medium text-foreground cursor-help"
                     title={`${g.zet} ЗЕТ (Зачётных Единиц Трудоёмкости) = ${g.zet * 36} академических часов нагрузки. 1 ЗЕТ = 36 часов.`}
                   >
                     {g.zet} ЗЕТ

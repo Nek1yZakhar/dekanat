@@ -54,6 +54,12 @@
     --input: oklch(0.91 0.01 250);
     --ring: oklch(0.45 0.1 250);
     --radius: 0.75rem;
+
+    /* Animation & Motion Tokens (animate & better-motion standards) */
+    --ease-out-snappy: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-natural: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --dur-fast: 140ms;
+    --dur-base: 200ms;
   }
 }
 
@@ -81,4 +87,51 @@ body {
 .scrollbar-none {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+/* Micro-interaction & Motion physics (animate & better-motion) */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 180ms var(--ease-out-snappy) forwards;
+}
+
+.card-interactive {
+  transition: transform var(--dur-base) var(--ease-out-natural),
+              box-shadow var(--dur-base) ease,
+              border-color var(--dur-base) ease;
+  will-change: transform;
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
+}
+
+.card-interactive:active {
+  transform: scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .card-interactive:hover {
+    transform: none !important;
+  }
+  .card-interactive:active {
+    transform: none !important;
+  }
 }
