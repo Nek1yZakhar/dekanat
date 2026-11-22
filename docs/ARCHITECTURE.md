@@ -16,15 +16,18 @@ graph TD
   end
 
   subgraph NextApp["Next.js 16 Standalone Container (Порт 3000)"]
-    DISC["Сквозной баннер-дисклеймер + Кнопка «Оболочка MAX»"]
-    AUTH["Авторизация: /login (3 тестовых роли)"]
+    DISC["Сквозной баннер-дисклеймер + Кнопка «Оболочка MAX» (с автосбросом)"]
+    AUTH["Авторизация: /login (3 тестовых студента + деканат)"]
     STUDENT["Кабинет студента: /dashboard, /schedule, /grades, /requests, /ai"]
     STAFF["Кабинет деканата: /staff (Очередь и модерация заявок)"]
-    MAX_BRIDGE["MAX Bridge SDK / Симулятор /max-preview"]
-    API_AI["/api/ai/chat (Гибридный RAG + SOCKS5 Egress)"]
+    MAX_BRIDGE["MAX Bridge SDK / Симулятор /max-preview с официальным логотипом Робота Макса"]
+    API_AI["/api/ai/chat (Гибридный RAG + SOCKS5 Egress: nvidia/nemotron-3.5-lightning:free)"]
     API_HEALTH["/api/health (Мониторинг жизнеспособности)"]
+    API_ACTIVITY["/api/system/activity (Трекер активности пользователя)"]
+    API_RESET["/api/system/reset-demo (Автосброс базы к исходному сиду)"]
     PROXY["app/proxy.ts (Серверная проверка сессий Supabase SSR)"]
     RT_LISTENER["components/realtime-listener.tsx"]
+    ACT_TRACKER["components/activity-tracker.tsx (Слушатель действий)"]
   end
 
   subgraph SupabaseCloud["Облачный кластер Supabase (eu-central-1, Postgres 17)"]
@@ -36,13 +39,14 @@ graph TD
   end
 
   subgraph ExternalAI["Внешний AI-контур"]
-    PROXY_SOCKS["Выделенный SOCKS5 Egress (AI_PROXY_URL)"]
-    OPENROUTER["OpenRouter API (google/gemma-4-31b-it:free)"]
+    PROXY_SOCKS["Выделенный SOCKS5 Egress (AI_PROXY_URL, node:https.request)"]
+    OPENROUTER["OpenRouter API (nvidia/nemotron-3.5-lightning:free)"]
     OFFLINE_FALLBACK["Детерминированный оффлайн-движок с цитированием статей"]
   end
 
-  subgraph KeepAlive["Мониторинг активности"]
-    CRON["Системный crontab (каждые 12 часов)"]
+  subgraph KeepAliveAndWatchdog["Мониторинг и защита целостности демо-базы"]
+    CRON["Системный crontab Keep-Alive (каждые 12 часов)"]
+    WATCHDOG["Системный crontab Watchdog (каждые 5 минут):<br/>проверка неактивности >= 1 час -> POST /api/system/reset-demo"]
   end
 
   W --> DNS
@@ -61,6 +65,7 @@ graph TD
   AUTH --> AUTHN
 
   STUDENT --> RT_LISTENER
+  STUDENT --> ACT_TRACKER --> API_ACTIVITY
   RT_LISTENER -.->|"WebSocket postgres_changes"| PUB
   STAFF -.->|"WebSocket postgres_changes"| PUB
   PUB -.->|"Push-события & тосты"| SONNER
@@ -72,6 +77,7 @@ graph TD
   RLS --> TABLES
   TABLES --> PUB
   CRON -->|"Keep-Alive опрос"| API_HEALTH
+  WATCHDOG -->|"Сброс при тишине >= 1ч"| API_RESET
 ```
 
 ---
@@ -144,3 +150,13 @@ graph TD
   4. Ликвидированы паразитные вертикальные скроллбары (замена фиксированных `pb-20` на адаптивные `md:pb-6` и сжатие отступов экрана входа). Бейджи приведены к стандарту контрастности WCAG AA ($\ge 4.5:1$).
   5. Реализован двухуровневый академический guardrail в `/api/ai/chat` (детерминированная блокировка оффтопа + системный промпт) и встроен чистый парсер Markdown без сырых звездочек с сохранением сессии в `localStorage`.
 - **Последствия**: Аутентичный студенческий опыт, полное соответствие эргономическим и регуляторным стандартам, высокая отказоустойчивость и безопасность.
+
+### ADR-009: Строгая изоляция профилей студентов (SSoT), транспорт node:https для SOCKS5 AI и автосброс демо-данных
+- **Дата**: 23 ноября 2026
+- **Контекст**: При тестировании сценариев с разными студентами обнаружилось смешивание зачеток (у студентки Кузнецовой с долгом отображался отличный балл 4.8 Смирнова), залипание шапки в оболочке MAX при прокрутке, сброс SOCKS-агента в Node.js 18+ native fetch (приводящий к HTTP 403 на OpenRouter), а также необходимость автоматической очистки накапливающихся при демонстрации заявок без сброса базы посреди активного тестирования жюри.
+- **Решение**: 
+  1. Выделить независимые изолированные наборы данных для каждого студента: Смирнов (ЦД, GPA 4.8, 0 долгов), Кузнецова (ЦД, GPA 3.25, 1 долг по Матанализу с интерактивным симулятором сдачи), Иванова (МО ИГУ, группа 07131-ДБ, GPA 4.67). Привязать расписание строго к группе авторизованного студента без лишних вкладок чужих направлений.
+  2. Убрать `sticky top-0` у шапки и дисклеймера для плавного скролла контента без паразитных наложений и висящих границ.
+  3. Переписать сетевой транспорт роута `/api/ai/chat` с `fetch` на `node:https.request` с проксированием через `SocksProxyAgent`, подключить быструю модель `nvidia/nemotron-3.5-lightning:free` с каскадом на `liquid/lfm-3-1.7b:free`.
+  4. Внедрить систему автосброса демо-базы: слушатель активности `<ActivityTracker />`, эндпоинт `/api/system/activity`, серверный сброс `/api/system/reset-demo` и крон-вотчдог `scripts/demo-watchdog.sh`, накатывающий эталонный сид ровно через 1 час неактивности после последнего действия пользователя.
+- **Последствия**: 100% достоверная демонстрация академических рисков для каждого студента, живой отклик нейросети без оффлайн-заглушек, гарантия чистой базы данных для каждого проверяющего жюри.
