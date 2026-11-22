@@ -7,45 +7,32 @@
 set -euo pipefail
 
 STATE_FILE="/tmp/dekanat_activity_state.json"
-APP_DIR="/home/ubuntu/dekanat"
 IDLE_THRESHOLD_SECONDS=3600 # 1 hour
 
 if [ ! -f "$STATE_FILE" ]; then
-  # No activity recorded yet
   exit 0
 fi
 
-# Read JSON fields using node
-PENDING=$(node -e "try { const d=JSON.parse(fs.readFileSync('$STATE_FILE','utf8')); console.log(d.pending_reset ? 'true':'false'); } catch { console.log('false'); }" 2>/dev/null || echo "false")
-LAST_ACTIVITY=$(node -e "try { const d=JSON.parse(fs.readFileSync('$STATE_FILE','utf8')); console.log(Math.floor(d.last_activity_at/1000)); } catch { console.log(0); }" 2>/dev/null || echo 0)
+# Check activity with python3
+SHOULD_RESET=$(python3 -c "
+import json, time, os, sys
 
-CURRENT_TIME=$(date +%s)
-ELAPSED=$((CURRENT_TIME - LAST_ACTIVITY))
+try:
+    with open('$STATE_FILE', 'r') as f:
+        data = json.load(f)
+    pending = data.get('pending_reset', False)
+    last_act = data.get('last_activity_at', 0) / 1000.0
+    now = time.time()
+    if pending and (now - last_act >= $IDLE_THRESHOLD_SECONDS):
+        print('yes')
+    else:
+        print('no')
+except Exception:
+    print('no')
+")
 
-if [ "$PENDING" = "true" ] && [ "$ELAPSED" -ge "$IDLE_THRESHOLD_SECONDS" ]; then
-  echo "[$(date -u '+%Y-%m-%d %H:%M:%S UTC')] Inactivity threshold reached (${ELAPSED}s >= ${IDLE_THRESHOLD_SECONDS}s). Triggering demo reset..."
-  
-  cd "$APP_DIR"
-  
-  # Run pristine database re-seeding via docker or direct node
-  if docker compose ps app | grep -q "Up"; then
-    docker compose exec -T app pnpm seed || true
-  else
-    pnpm seed || true
-  fi
-
-  # Update state: pending_reset = false
-  node -e "
-    const fs = require('fs');
-    try {
-      const d = JSON.parse(fs.readFileSync('$STATE_FILE','utf8'));
-      d.pending_reset = false;
-      d.last_reset_at = Date.now();
-      fs.writeFileSync('$STATE_FILE', JSON.stringify(d, null, 2));
-      console.log('State updated: pending_reset=false');
-    } catch(e) {
-      console.error(e);
-    }
-  "
-  echo "[$(date -u '+%Y-%m-%d %H:%M:%S UTC')] Demo reset completed successfully."
+if [ "$SHOULD_RESET" = "yes" ]; then
+  echo "[$(date -u '+%Y-%m-%d %H:%M:%S UTC')] Inactivity threshold of 1 hour reached. Resetting demo data..."
+  curl -s -X POST http://127.0.0.1:3000/api/system/reset-demo || true
+  echo "[$(date -u '+%Y-%m-%d %H:%M:%S UTC')] Reset request dispatched."
 fi
