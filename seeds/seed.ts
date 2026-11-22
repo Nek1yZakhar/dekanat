@@ -133,7 +133,7 @@ async function runSeed() {
     { group_id: group3.id, discipline: 'Введение в специальность', kind: 'lecture', weekday: 1, start_time: '08:30', end_time: '10:00', room: 'ауд. 307', teacher: 'доц. Елохина Ю.В.' },
     { group_id: group3.id, discipline: 'Новая история стран Европы и Америки', kind: 'lecture', weekday: 2, start_time: '10:10', end_time: '11:40', room: 'ауд. 329', teacher: 'проф. Костров А.В.' },
     { group_id: group3.id, discipline: 'История международных отношений', kind: 'seminar', weekday: 3, start_time: '11:50', end_time: '13:20', room: 'ауд. 329', teacher: 'доц. Матвеева Е.А.' },
-    { group_id: group3.id, discipline: 'Иностранный язык (английский)', kind: 'practice', weekday: 4, start_time: '08:30', end_time: '10:00', room: 'ауд. 233', teacher: 'ст.преп. Алексеева Е.Е.' },
+    { group_id: group3.id, discipline: 'Иностранный язык (английский)', kind: 'seminar', weekday: 4, start_time: '08:30', end_time: '10:00', room: 'ауд. 233', teacher: 'ст.преп. Алексеева Е.Е.' },
     { group_id: group3.id, discipline: 'Основы российской государственности', kind: 'lecture', weekday: 5, start_time: '10:10', end_time: '11:40', room: 'ауд. 307', teacher: 'доц. Шмидт С.Ф.' },
   ];
 
