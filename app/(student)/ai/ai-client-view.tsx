@@ -221,7 +221,7 @@ export function AiClientView({ userId, studentName }: AiClientViewProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-[calc(100vh-140px)]">
+    <div className="flex-1 flex flex-col h-[calc(100dvh-175px)] md:h-[calc(100dvh-130px)] min-h-0 overflow-hidden">
       {/* Header */}
       <div className="mb-2 shrink-0 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -251,8 +251,8 @@ export function AiClientView({ userId, studentName }: AiClientViewProps) {
         )}
       </div>
 
-      {/* Chat Messages List (Natural document flow) */}
-      <div className="flex-1 space-y-3 pb-3">
+      {/* Chat Messages List (Internal scroll container) */}
+      <div className="flex-1 overflow-y-auto space-y-3 pb-2 pr-1.5 min-h-0 scrollbar-thin">
         {messages.map((m) => {
           const isUser = m.role === "user";
           return (
@@ -329,8 +329,8 @@ export function AiClientView({ userId, studentName }: AiClientViewProps) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Suggestions & Input Bar Sticky at bottom */}
-      <div className="sticky bottom-16 md:bottom-0 z-20 bg-background/95 backdrop-blur-md pt-2 pb-1 border-t border-border -mx-4 px-4 mt-auto">
+      {/* Quick Suggestions & Input Bar Pinned at bottom */}
+      <div className="shrink-0 z-20 bg-background/95 backdrop-blur-md pt-2 pb-1 sm:pb-2 border-t border-border -mx-3 sm:-mx-4 px-3 sm:px-4 mt-auto">
         {/* Quick Suggestions Chips */}
         <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-none">
           {SUGGESTIONS.map((item, idx) => (

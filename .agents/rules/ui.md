@@ -73,3 +73,9 @@
 - **Strict Account Isolation in Client Storage**: Any client-side state persistence (`localStorage`, `sessionStorage`, `IndexedDB`) holding user messages, form drafts, or session-specific dialog histories MUST namespace keys by user identity (e.g., `prefix_${userId}`).
 - **Zero Cross-Account Bleed**: A single shared static storage key (such as `dekanat_ai_chat_history`) is strictly prohibited. When multiple user accounts (or test personas) sign in on the same browser, their chat histories, unread badges, and form states must remain strictly isolated and never leak across sessions.
 
+## 15. Adaptive Dual-Navigation & Multi-Column Desktop Density Invariant (Impeccable Standard)
+- **Desktop Navigation Isolation (`md:hidden` / `DesktopNav`)**: Mobile bottom navigation bars (`MobileNav`) MUST be strictly hidden on desktop screens (`md:hidden`). On desktop (`md+`), navigation must be integrated into the top header (`DesktopNav`) with active indicators. Never allow a mobile bottom bar to span across desktop viewports or overlap bottom content and input fields.
+- **Fixed Viewport Chat Geometry**: Conversational and messaging screens on desktop must use a fixed viewport calculation (`h-[calc(100dvh-130px)] flex flex-col min-h-0 overflow-hidden`), scrolling messages internally (`overflow-y-auto min-h-0`), with the input container pinned at the bottom (`shrink-0 mt-auto`) with comfortable padding and zero cutoff. Outer window vertical scrollbars are strictly forbidden on chat screens.
+- **Multi-Column B2B Density**: On large screens (`md+` / `lg+`), pages must not stretch single-column cards across 900px+ like an oversized mobile phone. Use balanced 2-column or 4-column responsive grids (`grid grid-cols-1 md:grid-cols-2 gap-4`, `grid-cols-2 md:grid-cols-4`) for dashboard widgets, KPI cards, and discipline lists.
+
+

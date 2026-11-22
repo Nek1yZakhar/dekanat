@@ -117,102 +117,101 @@ export function GradesClientView({ initialGrades, studentFullName }: GradesClien
         </p>
       </div>
 
-      {/* Path to Diploma Progress Bar */}
-      <Card className="border-border bg-gradient-to-br from-card to-muted/30">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold flex items-center gap-1.5">
-              <GraduationCap className="w-4 h-4 text-primary" />
-              Прогресс диплома бакалавра
-            </span>
-            <span className="text-xs font-bold text-primary">{progressPercent}%</span>
-          </div>
-          <CardDescription className="text-xs">
-            Освоено {risk.completedCount} из {totalRequired} зачётных единиц учебного плана
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
-            <div
-              className="bg-primary h-2.5 rounded-full transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Academic Risk Early-Warning Indicator Card */}
-      <Card className="border-border">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <div className="flex items-center gap-2 shrink-0">
-              <Award className="w-4 h-4 text-primary" />
-              <CardTitle className="text-sm font-semibold">
-                Индикатор академического риска
-              </CardTitle>
+      {/* Top B2B Analytics: Diploma Progress & Academic Risk in 2 Columns on md+ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
+        {/* Path to Diploma Progress Bar */}
+        <Card className="border-border bg-gradient-to-br from-card to-muted/30 flex flex-col justify-between">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold flex items-center gap-1.5">
+                <GraduationCap className="w-4 h-4 text-primary" />
+                Прогресс диплома бакалавра
+              </span>
+              <span className="text-xs font-bold text-primary">{progressPercent}%</span>
             </div>
-            <Badge
-              variant={
-                risk.level === "low"
-                  ? "success"
-                  : risk.level === "medium"
-                  ? "warning"
-                  : "destructive"
-              }
-              className="shrink-0"
-            >
-              {risk.level === "low" ? (
-                <span className="flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" /> Риск: {risk.label}
-                </span>
+            <CardDescription className="text-xs">
+              Освоено {risk.completedCount} из {totalRequired} зачётных единиц учебного плана
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2 pt-0 mt-auto">
+            <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
+              <div
+                className="bg-primary h-2.5 rounded-full transition-all duration-500"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Academic Risk Early-Warning Indicator Card */}
+        <Card className="border-border flex flex-col justify-between">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2 shrink-0">
+                <Award className="w-4 h-4 text-primary" />
+                <CardTitle className="text-sm font-semibold">
+                  Индикатор академического риска
+                </CardTitle>
+              </div>
+              <Badge
+                variant={
+                  risk.level === "low"
+                    ? "success"
+                    : risk.level === "medium"
+                    ? "warning"
+                    : "destructive"
+                }
+                className="shrink-0"
+              >
+                {risk.level === "low" ? (
+                  <span className="flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Риск: {risk.label}
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" /> Риск: {risk.label}
+                  </span>
+                )}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-2 gap-2 text-center">
+              <div
+                className="p-2 rounded-xl bg-muted/60"
+                title={`Средний балл GPA ${risk.averageGrade}. Рассчитан по зачетным оценкам.`}
+              >
+                <div className="text-[11px] text-muted-foreground">Средний балл (GPA)</div>
+                <div className="text-base font-bold mt-0.5 text-foreground font-mono">
+                  {risk.averageGrade || "—"}
+                </div>
+              </div>
+              <div className="p-2 rounded-xl bg-muted/60">
+                <div className="text-[11px] text-muted-foreground">Задолженностей</div>
+                <div className="text-base font-bold mt-0.5 text-foreground font-mono">
+                  {risk.debtsCount}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-1 border-t border-border/60 pt-2 text-[11px]">
+              <div className="font-semibold text-foreground flex items-center gap-1">
+                <TrendingUp className="w-3.5 h-3.5 text-primary" />
+                <span>Рекомендация деканата:</span>
+              </div>
+              {risk.recommendations.length > 0 ? (
+                <p className="text-muted-foreground leading-snug">
+                  • {risk.recommendations[0]}
+                </p>
               ) : (
-                <span className="flex items-center gap-1">
-                  <AlertTriangle className="w-3 h-3" /> Риск: {risk.label}
-                </span>
+                <p className="text-muted-foreground leading-snug">
+                  • Академическая успеваемость стабильна. Задолженностей нет.
+                </p>
               )}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-2 gap-2 text-center">
-            <div
-              className="p-2.5 rounded-xl bg-muted/60"
-              title={`Средний балл GPA ${risk.averageGrade}. Рассчитан по зачетным оценкам.`}
-            >
-              <div className="text-[11px] text-muted-foreground">Средний балл (GPA)</div>
-              <div className="text-lg font-bold mt-0.5 text-foreground font-mono">
-                {risk.averageGrade || "—"}
-              </div>
             </div>
-            <div className="p-2.5 rounded-xl bg-muted/60">
-              <div className="text-[11px] text-muted-foreground">Задолженностей</div>
-              <div className="text-lg font-bold mt-0.5 text-foreground font-mono">
-                {risk.debtsCount}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-1.5 border-t border-border/60 pt-2.5">
-            <div className="text-xs font-semibold text-foreground flex items-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5 text-primary" />
-              <span>Рекомендация деканата:</span>
-            </div>
-            {risk.recommendations.length > 0 ? (
-              <div className="space-y-1">
-                {risk.recommendations.map((rec, idx) => (
-                  <p key={idx} className="text-xs text-muted-foreground leading-relaxed">
-                    • {rec}
-                  </p>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                • Академическая успеваемость стабильна. Задолженностей нет.
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* BRS and ZET Informational Banner */}
       <div className="p-3.5 rounded-2xl bg-card border border-primary/20 text-xs flex items-start gap-2.5 shadow-2xs">
@@ -248,8 +247,8 @@ export function GradesClientView({ initialGrades, studentFullName }: GradesClien
         ))}
       </div>
 
-      {/* Grade Records List (Symmetric Layout) */}
-      <div className="space-y-2.5">
+      {/* Grade Records List (Responsive 2-Column Grid on md+) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {filteredGrades.map((g) => (
           <Card
             key={g.id}
