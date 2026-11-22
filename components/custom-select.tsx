@@ -89,7 +89,7 @@ export function CustomSelect({
       {isOpen && (
         <div
           role="listbox"
-          className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-card p-1 text-card-foreground shadow-lg animate-in fade-in-0 zoom-in-95 duration-100"
+          className="absolute z-50 mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1.5 text-foreground shadow-2xl animate-in fade-in-0 zoom-in-95 duration-100 ring-1 ring-black/5"
         >
           <div className="max-h-56 overflow-y-auto space-y-0.5">
             {options.map((option) => {

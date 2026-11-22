@@ -63,3 +63,13 @@
 ## 12. Viewport Height Dynamic Safe Area (100dvh & min-h-0)
 - Hardcoded viewport height subtractions (such as `h-[calc(100vh-135px)]`) are prohibited for interactive multi-component screens containing floating banners, headers, and bottom tab bars.
 - Screens with chat inputs or scrollable message histories must use dynamic viewport units (`100dvh`), `flex-1 min-h-0 flex flex-col`, and pin bottom inputs above fixed navigation bars without overlap or clipping.
+
+## 13. Solid Surfaces & Zero-Transparency Floating Layers Invariant
+- **Opaque Floating Layers**: Popovers, dropdown menus, custom select overlays (`CustomSelect`), tooltip boxes, floating sheets, and modals MUST have a 100% solid, opaque background (`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl`) and an explicit high z-index (`z-50`).
+- **Zero Unmapped/Transparent Utility Fallback**: Floating overlays must never rely on unmapped or semi-transparent background utility classes where background color defaults to `transparent`, causing underlying text, form fields, and buttons to bleed through.
+- **Tailwind v4 Variable Integrity**: In Tailwind CSS v4, all theme color variables (`--card`, `--popover`, `--background`, etc.) defined in `@layer base` must be explicitly declared inside `@theme { --color-card: var(--card); ... }` in `globals.css` to guarantee valid utility class generation.
+
+## 14. User-Scoped Client Storage Isolation Invariant
+- **Strict Account Isolation in Client Storage**: Any client-side state persistence (`localStorage`, `sessionStorage`, `IndexedDB`) holding user messages, form drafts, or session-specific dialog histories MUST namespace keys by user identity (e.g., `prefix_${userId}`).
+- **Zero Cross-Account Bleed**: A single shared static storage key (such as `dekanat_ai_chat_history`) is strictly prohibited. When multiple user accounts (or test personas) sign in on the same browser, their chat histories, unread badges, and form states must remain strictly isolated and never leak across sessions.
+
